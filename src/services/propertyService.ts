@@ -23,19 +23,18 @@ export const propertyService = {
   },
 
   // Get single property
-  async getById(id: number): Promise<Property> {
-    const response = await api.get<StrapiResponse<Property>>(`/properties/${id}?populate=*`);
-    return response.data.data;
-  },
-
+async getById(id: string): Promise<Property> {
+  const response = await api.get<StrapiResponse<Property>>(`/properties/${id}?populate=*`);
+  return response.data.data;
+},
   // Check availability
   async checkAvailability(
-    propertyId: number,
+    propertyDocumentId: string,
     checkIn: string,
     checkOut: string
   ): Promise<AvailabilityResponse> {
     const response = await api.get<AvailabilityResponse>(
-      `/properties/${propertyId}/availability?checkIn=${checkIn}&checkOut=${checkOut}`
+      `/properties/${propertyDocumentId}/availability?checkIn=${checkIn}&checkOut=${checkOut}`
     );
     return response.data;
   },

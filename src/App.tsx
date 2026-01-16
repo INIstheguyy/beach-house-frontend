@@ -1,88 +1,52 @@
-import { useEffect, useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { propertyService } from './services/propertyService';
-import type  { Property } from './types';
+import { Routes, Route } from "react-router-dom";
+import Layout from "./components/layout/Layout";
+import Home from "./pages/Home";
+import Properties from "./pages/Properties";
+import PropertyDetail from "./pages/PropertyDetail";
+import BookingForm from "./pages/BookingForm";
+
+// Temporary placeholder pages
+// const HomePage = () => (
+//   <div className="container mx-auto px-4 py-16">
+//     <h1 className="text-4xl font-bold text-primary">Home Page</h1>
+//     <p className="mt-4 text-gray-600">This will be the home page with hero section and featured properties.</p>
+//   </div>
+// );
+
+// const PropertiesPage = () => (
+//   <div className="container mx-auto px-4 py-16">
+//     <h1 className="text-4xl font-bold text-primary">Properties Page</h1>
+//     <p className="mt-4 text-gray-600">This will show all available properties.</p>
+//   </div>
+// );
+
+const AboutPage = () => (
+  <div className="container mx-auto px-4 py-16">
+    <h1 className="text-4xl font-bold text-primary">About Page</h1>
+    <p className="mt-4 text-gray-600">Information about Lagos Beach Rentals.</p>
+  </div>
+);
+
+const ContactPage = () => (
+  <div className="container mx-auto px-4 py-16">
+    <h1 className="text-4xl font-bold text-primary">Contact Page</h1>
+    <p className="mt-4 text-gray-600">Get in touch with us.</p>
+  </div>
+);
 
 function App() {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadProperties();
-  }, []);
-
-  const loadProperties = async () => {
-    try {
-      setLoading(true);
-      const data = await propertyService.getAll();
-      console.log('Fetched properties:', data);
-      setProperties(data);
-      setError(null);
-    } catch (err) {
-      console.error('Failed to load properties:', err);
-      setError('Failed to load properties. Make sure Strapi is running on http://localhost:1337');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <h1 className="text-4xl font-bold text-primary">
-          Lagos Beach Rentals
-        </h1>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Properties from Strapi</CardTitle>
-            <CardDescription>
-              Testing API connection
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading && <p>Loading properties...</p>}
-            
-            {error && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-                {error}
-              </div>
-            )}
-            
-            {!loading && !error && properties.length === 0 && (
-              <p className="text-gray-500">No properties found. Add some in Strapi!</p>
-            )}
-            
-            {!loading && !error && properties.length > 0 && (
-              <div className="space-y-4">
-                <p className="text-green-600 font-semibold">
-                  ✅ Connected! Found {properties.length} property(ies)
-                </p>
-                {properties.map((property) => (
-                  <div key={property.id} className="p-4 border rounded-lg">
-                    <h3 className="font-semibold text-lg">
-                      {property.title}
-                    </h3>
-                    <p className="text-gray-600">
-                      {property.location}
-                    </p>
-                    <p className="text-primary font-semibold mt-2">
-                      ₦{property.pricePerNight.toLocaleString()}/night
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            <Button onClick={loadProperties} className="mt-4">
-              Reload Properties
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="properties" element={<Properties />} />
+
+        <Route path="properties/:documentId" element={<PropertyDetail />} />
+        <Route path="booking" element={<BookingForm />} />
+        <Route path="about" element={<AboutPage />} />
+        <Route path="contact" element={<ContactPage />} />
+      </Route>
+    </Routes>
   );
 }
 

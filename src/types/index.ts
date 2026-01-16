@@ -11,57 +11,70 @@ export interface StrapiResponse<T> {
   };
 }
 
-export interface StrapiEntity<T> {
-  id: number;
-  attributes: T;
-}
+// ❌ Remove this - not needed in v5
+// export interface StrapiEntity<T> {
+//   id: number;
+//   documentId: string;
+//   attributes: T;
+// }
 
-// Property types
-export interface PropertyAttributes {
-    id: number;
+// Property types - now flat, not wrapped
+export interface Property {
+  id: number;
+  documentId: string;
   title: string;
   slug: string;
   description: string;
   location: string;
-  propertyType: 'Beach House' | 'Apartment' | 'Villa';
+  propertyType: "Beach House" | "Apartment" | "Villa";
   pricePerNight: number;
   maxGuests: number;
   bedrooms: number;
   bathrooms: number;
   amenities: string[];
-  photos?: {
-    data: Array<{
-      id: number;
-      attributes: {
-        url: string;
-        name: string;
-      };
-    }>;
-  };
+  photos?: Array<{
+    id: number;
+    documentId: string;
+    name: string;
+    url: string;
+    alternativeText: string | null;
+    caption: string | null;
+  }>;
   featuredPhoto?: {
-    data: {
-      id: number;
-      attributes: {
-        url: string;
-        name: string;
-      };
-    };
+    id: number;
+    documentId: string;
+    name: string;
+    url: string;
+    alternativeText: string | null;
+    caption: string | null;
   };
   icalUrl?: string;
   property_owner?: {
-    data: StrapiEntity<PropertyOwnerAttributes>;
+    id: number;
+    documentId: string;
+    name: string;
+    email: string;
+    phone: string;
+    bankDetails?: {
+      accountNumber: string;
+      bankName: string;
+      accountName: string;
+    };
+    flutterwaveSubaccount?: string;
+    totalEarnings: number;
   };
   flutterwaveSubaccount?: string;
-  commissionRate: number;
+  commissionRate?: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  publishedAt: string;
 }
 
-export type Property = StrapiEntity<PropertyAttributes>;
-
 // Property Owner types
-export interface PropertyOwnerAttributes {
+export interface PropertyOwner {
+  id: number;
+  documentId: string;
   name: string;
   email: string;
   phone: string;
@@ -74,17 +87,13 @@ export interface PropertyOwnerAttributes {
   totalEarnings: number;
 }
 
-export type PropertyOwner = StrapiEntity<PropertyOwnerAttributes>;
-
 // Booking types
-export interface BookingAttributes {
+export interface Booking {
+  id: number;
+  documentId: string;
   bookingReference: string;
-  property: {
-    data: Property;
-  };
-  property_owner?: {
-    data: PropertyOwner;
-  };
+  property: Property;
+  property_owner?: PropertyOwner;
   guestName: string;
   guestEmail: string;
   guestPhone: string;
@@ -96,23 +105,23 @@ export interface BookingAttributes {
   totalAmount: number;
   agentCommission: number;
   propertyOwnerAmount: number;
-  paymentStatus: 'pending' | 'completed' | 'failed' | 'refunded';
+  paymentStatus: "pending" | "completed" | "failed" | "refunded";
   flutterwaveTransactionId?: string;
   flutterwaveReference?: string;
   paidAt?: string;
-  bookingStatus: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  bookingStatus: "pending" | "confirmed" | "cancelled" | "completed";
   specialRequests?: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export type Booking = StrapiEntity<BookingAttributes>;
-
 // Blocked Date types
-export interface BlockedDateAttributes {
+export interface BlockedDate {
+  id: number;
+  documentId: string;
   startDate: string;
   endDate: string;
-  reason: 'booked' | 'maintenance' | 'owner-use' | 'manual-block';
+  reason: "booked" | "maintenance" | "owner-use" | "manual-block";
 }
 
 // API Request/Response types
@@ -121,11 +130,11 @@ export interface AvailabilityResponse {
   propertyId: string;
   checkIn: string;
   checkOut: string;
-  blockedDates: BlockedDateAttributes[];
+  blockedDates: BlockedDate[];
 }
 
 export interface BookingInitializeRequest {
-  propertyId: number;
+  propertyId: string;  // Changed to string (documentId)
   checkIn: string;
   checkOut: string;
   guestDetails: {
@@ -151,7 +160,7 @@ export interface BookingVerifyResponse {
 
 // Filter types
 export interface PropertyFilters {
-  propertyType?: 'Beach House' | 'Apartment' | 'Villa';
+  propertyType?: "Beach House" | "Apartment" | "Villa";
   maxPrice?: number;
   minBedrooms?: number;
 }
