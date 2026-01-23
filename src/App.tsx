@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
 import BookingForm from "./pages/BookingForm";
+import BookingConfirmation from './pages/BookingConfirmation';
 
 // Temporary placeholder pages
 // const HomePage = () => (
@@ -43,6 +44,7 @@ function App() {
 
         <Route path="properties/:documentId" element={<PropertyDetail />} />
         <Route path="booking" element={<BookingForm />} />
+        <Route path="booking/verify" element={<BookingConfirmation />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="contact" element={<ContactPage />} />
       </Route>

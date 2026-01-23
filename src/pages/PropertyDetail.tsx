@@ -64,6 +64,7 @@ const PropertyDetail = () => {
         formatDateForAPI(checkIn),
         formatDateForAPI(checkOut)
       );
+      console.log('Availability result:', result);
       setAvailability(result);
     } catch (error) {
       console.error('Failed to check availability:', error);
@@ -133,7 +134,7 @@ const PropertyDetail = () => {
 
   const attr = property;
   const imageUrl = attr.featuredPhoto?.url ||
-                   attr.photos?.[0]?.url;
+                   attr.photos?.[1]?.url;
   const fullImageUrl = imageUrl 
     ? `${import.meta.env.VITE_STRAPI_URL}${imageUrl}`
     : 'https://via.placeholder.com/800x600?text=No+Image';

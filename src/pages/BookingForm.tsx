@@ -12,7 +12,7 @@ import { ArrowLeft, User, Mail, Phone, Users, Calendar, CreditCard, Shield } fro
 
 interface LocationState {
   property: any;
-  propertyId: number;
+  propertyId: string;
   checkIn: string;
   checkOut: string;
 }
@@ -134,6 +134,7 @@ const BookingForm = () => {
     } catch (error: any) {
       console.error('Booking failed:', error);
       const errorMessage = error.response?.data?.error?.message || 'Booking failed. Please try again.';
+      console.log(errorMessage);
       alert(errorMessage);
       setLoading(false);
     }
