@@ -67,13 +67,13 @@ const Properties = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2">
+      <div className="bg-white border-b shadow-sm">
+        <div className="container mx-auto px-4 py-10">
+          <h1 className="text-3xl md:text-4xl font-bold text-primary mb-3">
             All Properties
           </h1>
-          <p className="text-gray-600">
-            Browse our collection of luxury beach houses and apartments
+          <p className="text-gray-600 text-lg">
+            Find your perfect beach getaway in Lagos
           </p>
         </div>
       </div>
@@ -292,9 +292,30 @@ const Properties = () => {
 
             {/* Results Header */}
             <div className="flex items-center justify-between mb-6">
-              <p className="text-gray-600">
-                {loading ? 'Loading...' : `${properties.length} properties found`}
-              </p>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Showing {properties.length} properties
+                </h2>
+                {hasActiveFilters && (
+                  <p className="text-sm text-gray-600 mt-1">
+                    Filtered results
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600 hidden sm:block">Sort by:</span>
+                <Select defaultValue="recommended">
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="recommended">Recommended</SelectItem>
+                    <SelectItem value="price-low">Price: Low to High</SelectItem>
+                    <SelectItem value="price-high">Price: High to Low</SelectItem>
+                    <SelectItem value="rating">Highest Rated</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             {/* Properties Grid */}

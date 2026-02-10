@@ -1,12 +1,12 @@
-import { useEffect, useState, type SetStateAction } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { propertyService } from '@/services/propertyService';
-import { formatPrice } from '@/utils/priceHelpers';
-import { formatDateForAPI, calculateNights } from '@/utils/dateHelpers';
-import type { Property, AvailabilityResponse } from '@/types';
+import { useEffect, useState, type SetStateAction } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { propertyService } from "@/services/propertyService";
+import { formatPrice } from "@/utils/priceHelpers";
+import { formatDateForAPI, calculateNights } from "@/utils/dateHelpers";
+import type { Property, AvailabilityResponse } from "@/types";
 import {
   MapPin,
   Users,
@@ -16,26 +16,27 @@ import {
   Car,
   Utensils,
   Shield,
-  Calendar,
   ArrowLeft,
   CheckCircle,
   XCircle,
-} from 'lucide-react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+} from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const PropertyDetail = () => {
   const { documentId } = useParams<{ documentId: string }>();
   const navigate = useNavigate();
-  
+
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [checkIn, setCheckIn] = useState<Date | null>(null);
   const [checkOut, setCheckOut] = useState<Date | null>(null);
-  const [availability, setAvailability] = useState<AvailabilityResponse | null>(null);
+  const [availability, setAvailability] = useState<AvailabilityResponse | null>(
+    null
+  );
   const [checkingAvailability, setCheckingAvailability] = useState(false);
 
-   useEffect(() => {
+  useEffect(() => {
     if (documentId) {
       loadProperty(documentId);
     }
@@ -45,58 +46,62 @@ const PropertyDetail = () => {
     try {
       setLoading(true);
       const data = await propertyService.getById(propertyDocId);
-      console.log('Property data received:', data);
+      console.log("Property data received:", data);
       setProperty(data);
     } catch (error) {
-      console.error('Failed to load property:', error);
+      console.error("Failed to load property:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const checkAvailability = async () => {
-    if (!checkIn || !checkOut || !documentId) return;
+    if (!checkIn || !checkOut || !property) return;
 
     try {
       setCheckingAvailability(true);
+      console.log(property.id);
+      console.log(formatDateForAPI(checkIn));
+      console.log(formatDateForAPI(checkOut)  );
       const result = await propertyService.checkAvailability(
-        documentId,
+        property.id,
         formatDateForAPI(checkIn),
         formatDateForAPI(checkOut)
       );
-      console.log('Availability result:', result);
+      console.log("Availability result:", result);
       setAvailability(result);
     } catch (error) {
-      console.error('Failed to check availability:', error);
+      console.error("Failed to check availability:", error);
     } finally {
       setCheckingAvailability(false);
     }
   };
 
   useEffect(() => {
-    if (checkIn && checkOut) {
+    if (checkIn && checkOut && property) {
       checkAvailability();
     } else {
       setAvailability(null);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkIn, checkOut]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkIn, checkOut, property]);
 
   const handleBookNow = () => {
     if (!checkIn || !checkOut) {
-      alert('Please select check-in and check-out dates');
+      alert("Please select check-in and check-out dates");
       return;
     }
 
     if (!availability?.available) {
-      alert('Property not available for selected dates');
+      alert("Property not available for selected dates");
       return;
     }
 
     if (!property) return;
+    console.log("Booking property:", property.id);
 
     // Navigate to booking page with state
-    navigate('/booking', {
+    navigate("/booking", {
       state: {
         property: property,
         propertyId: property.id,
@@ -123,7 +128,7 @@ const PropertyDetail = () => {
         <Card>
           <CardContent className="p-12 text-center">
             <p className="text-gray-600 mb-4">Property not found</p>
-            <Button onClick={() => navigate('/properties')}>
+            <Button onClick={() => navigate("/properties")}>
               Back to Properties
             </Button>
           </CardContent>
@@ -133,11 +138,10 @@ const PropertyDetail = () => {
   }
 
   const attr = property;
-  const imageUrl = attr.featuredPhoto?.url ||
-                   attr.photos?.[1]?.url;
-  const fullImageUrl = imageUrl 
+  const imageUrl = attr.featuredPhoto?.url || attr.photos?.[1]?.url;
+  const fullImageUrl = imageUrl
     ? `${import.meta.env.VITE_STRAPI_URL}${imageUrl}`
-    : 'https://via.placeholder.com/800x600?text=No+Image';
+    : "https://via.placeholder.com/800x600?text=No+Image";
 
   const nights = checkIn && checkOut ? calculateNights(checkIn, checkOut) : 0;
   const totalAmount = nights * attr.pricePerNight;
@@ -145,25 +149,25 @@ const PropertyDetail = () => {
   // Icon mapping for amenities
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const amenityIcons: Record<string, any> = {
-    'WiFi': Wifi,
-    'Wifi': Wifi,
-    'Pool': Users,
-    'Parking': Car,
-    'Kitchen': Utensils,
-    'Security': Shield,
-    'Generator': Shield,
-    'AC': Shield,
+    WiFi: Wifi,
+    Wifi: Wifi,
+    Pool: Users,
+    Parking: Car,
+    Kitchen: Utensils,
+    Security: Shield,
+    Generator: Shield,
+    AC: Shield,
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Back Button */}
-      <div className="bg-white border-b">
+      <div className="bg-white border-b shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <Button
             variant="ghost"
             onClick={() => navigate(-1)}
-            className="text-primary hover:text-primary-600"
+            className="text-gray-700 hover:text-accent"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
@@ -186,18 +190,23 @@ const PropertyDetail = () => {
 
             {/* Property Header */}
             <div>
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <span className="inline-block bg-accent text-white px-3 py-1 rounded-full text-sm font-semibold mb-3">
-                    {attr.propertyType}
-                  </span>
-                  <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2">
-                    {attr.title}
-                  </h1>
-                  <div className="flex items-center text-gray-600">
-                    <MapPin className="h-5 w-5 mr-2" />
-                    <span className="text-lg">{attr.location}</span>
+              <div className="mb-4">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                  {attr.title}
+                </h1>
+                <div className="flex items-center gap-4 text-gray-600 mb-3">
+                  <div className="flex items-center gap-1">
+                    <CheckCircle className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                    <span className="font-semibold">4.96</span>
+                    <span className="text-sm">(128 reviews)</span>
                   </div>
+                  <div className="flex items-center">
+                    <MapPin className="h-5 w-5 mr-1" />
+                    <span>{attr.location}</span>
+                  </div>
+                  <span className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-semibold">
+                    SUPERHOST
+                  </span>
                 </div>
               </div>
 
@@ -205,15 +214,21 @@ const PropertyDetail = () => {
               <div className="flex flex-wrap gap-6 text-gray-700">
                 <div className="flex items-center">
                   <Bed className="h-5 w-5 mr-2 text-primary" />
-                  <span className="font-semibold">{attr.bedrooms} Bedrooms</span>
+                  <span className="font-semibold">
+                    {attr.bedrooms} Bedrooms
+                  </span>
                 </div>
                 <div className="flex items-center">
                   <Bath className="h-5 w-5 mr-2 text-primary" />
-                  <span className="font-semibold">{attr.bathrooms} Bathrooms</span>
+                  <span className="font-semibold">
+                    {attr.bathrooms} Bathrooms
+                  </span>
                 </div>
                 <div className="flex items-center">
                   <Users className="h-5 w-5 mr-2 text-primary" />
-                  <span className="font-semibold">Max {attr.maxGuests} Guests</span>
+                  <span className="font-semibold">
+                    Max {attr.maxGuests} Guests
+                  </span>
                 </div>
               </div>
             </div>
@@ -242,7 +257,10 @@ const PropertyDetail = () => {
                     {attr.amenities.map((amenity, index) => {
                       const Icon = amenityIcons[amenity] || CheckCircle;
                       return (
-                        <div key={index} className="flex items-center text-gray-700">
+                        <div
+                          key={index}
+                          className="flex items-center text-gray-700"
+                        >
                           <Icon className="h-5 w-5 mr-2 text-accent" />
                           <span>{amenity}</span>
                         </div>
@@ -273,7 +291,9 @@ const PropertyDetail = () => {
                     <Label className="mb-2 block">Check-in</Label>
                     <DatePicker
                       selected={checkIn}
-                      onChange={(date: SetStateAction<Date | null>) => setCheckIn(date)}
+                      onChange={(date: SetStateAction<Date | null>) =>
+                        setCheckIn(date)
+                      }
                       selectsStart
                       startDate={checkIn}
                       endDate={checkOut}
@@ -288,7 +308,9 @@ const PropertyDetail = () => {
                     <Label className="mb-2 block">Check-out</Label>
                     <DatePicker
                       selected={checkOut}
-                      onChange={(date: SetStateAction<Date | null>) => setCheckOut(date)}
+                      onChange={(date: SetStateAction<Date | null>) =>
+                        setCheckOut(date)
+                      }
                       selectsEnd
                       startDate={checkIn}
                       endDate={checkOut}
@@ -306,20 +328,32 @@ const PropertyDetail = () => {
                     {checkingAvailability ? (
                       <div className="text-center py-4">
                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-                        <p className="text-sm text-gray-600 mt-2">Checking availability...</p>
+                        <p className="text-sm text-gray-600 mt-2">
+                          Checking availability...
+                        </p>
                       </div>
                     ) : availability ? (
-                      <div className={`p-4 rounded-lg ${availability.available ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+                      <div
+                        className={`p-4 rounded-lg ${
+                          availability.available
+                            ? "bg-green-50 border border-green-200"
+                            : "bg-red-50 border border-red-200"
+                        }`}
+                      >
                         <div className="flex items-center">
                           {availability.available ? (
                             <>
                               <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                              <span className="text-green-800 font-semibold">Available!</span>
+                              <span className="text-green-800 font-semibold">
+                                Available!
+                              </span>
                             </>
                           ) : (
                             <>
                               <XCircle className="h-5 w-5 text-red-600 mr-2" />
-                              <span className="text-red-800 font-semibold">Not available</span>
+                              <span className="text-red-800 font-semibold">
+                                Not available
+                              </span>
                             </>
                           )}
                         </div>
@@ -332,12 +366,17 @@ const PropertyDetail = () => {
                 {nights > 0 && (
                   <div className="mb-6 space-y-3 pt-6 border-t">
                     <div className="flex justify-between text-gray-700">
-                      <span>{formatPrice(attr.pricePerNight)} × {nights} night{nights !== 1 ? 's' : ''}</span>
+                      <span>
+                        {formatPrice(attr.pricePerNight)} × {nights} night
+                        {nights !== 1 ? "s" : ""}
+                      </span>
                       <span>{formatPrice(attr.pricePerNight * nights)}</span>
                     </div>
                     <div className="flex justify-between font-bold text-lg pt-3 border-t">
                       <span>Total</span>
-                      <span className="text-primary">{formatPrice(totalAmount)}</span>
+                      <span className="text-primary">
+                        {formatPrice(totalAmount)}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -349,13 +388,25 @@ const PropertyDetail = () => {
                   onClick={handleBookNow}
                   disabled={!availability?.available || !checkIn || !checkOut}
                 >
-                  <Calendar className="h-5 w-5 mr-2" />
-                  Book Now
+                  <CheckCircle className="h-5 w-5 mr-2" />
+                  Reserve
                 </Button>
 
-                <p className="text-sm text-gray-500 text-center mt-4">
+                <p className="text-sm text-gray-500 text-center mt-3">
                   You won't be charged yet
                 </p>
+                
+                {/* Trust Badges */}
+                <div className="mt-6 pt-6 border-t space-y-3">
+                  <div className="flex items-center gap-3 text-sm text-gray-700">
+                    <Shield className="h-5 w-5 text-success" />
+                    <span>Secure payment</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <span>Instant confirm</span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>

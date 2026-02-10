@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { bookingService } from '@/services/bookingService';
 import { formatPrice } from '@/utils/priceHelpers';
 import { formatDate, calculateNights } from '@/utils/dateHelpers';
-import { ArrowLeft, User, Mail, Phone, Users, Calendar, CreditCard, Shield } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, Users, Calendar, CreditCard, Shield, MapPin, CheckCircle } from 'lucide-react';
 
 interface LocationState {
   property: any;
@@ -143,24 +143,65 @@ const BookingForm = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b">
+      <div className="bg-white border-b shadow-sm">
         <div className="container mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="text-primary hover:text-primary-600"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
+          <div className="max-w-5xl mx-auto">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-8">
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate(-1)}
+                  className="text-gray-700 hover:text-accent"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Button>
+                <h1 className="text-xl font-bold text-gray-900 hidden md:block">
+                  Lagos Beach Rentals
+                </h1>
+              </div>
+              <Button variant="outline" size="sm">
+                <User className="h-4 w-4 mr-2" />
+                Sign In
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-5xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold text-primary mb-8">
-            Complete Your Booking
-          </h1>
+          {/* Progress Steps */}
+          <div className="mb-8">
+            <div className="flex items-center justify-center">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center text-sm font-semibold">
+                    1
+                  </div>
+                  <span className="text-sm font-medium text-accent">Details</span>
+                </div>
+                <div className="w-12 h-0.5 bg-gray-300"></div>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold">
+                    2
+                  </div>
+                  <span className="text-sm font-medium text-gray-600">Payment</span>
+                </div>
+                <div className="w-12 h-0.5 bg-gray-300"></div>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold">
+                    3
+                  </div>
+                  <span className="text-sm font-medium text-gray-600">Confirm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">
+            Step 1 of 3: Details
+          </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Booking Form - Left Column */}
@@ -301,15 +342,29 @@ const BookingForm = () => {
 
             {/* Booking Summary - Right Column */}
             <div className="lg:col-span-1">
-              <Card className="sticky top-24">
-                <CardHeader>
-                  <CardTitle>Booking Summary</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+              <Card className="sticky top-24 shadow-lg border-0">
+                <CardContent className="p-6 space-y-5">
+                  {/* Property Image */}
+                  <div className="relative h-48 rounded-lg overflow-hidden">
+                    <img
+                      src={property.featuredPhoto?.url ? `${import.meta.env.VITE_STRAPI_URL}${property.featuredPhoto.url}` : 'https://picsum.photos/400/300'}
+                      alt={property.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  
                   {/* Property Info */}
                   <div>
-                    <h3 className="font-semibold text-lg">{property.title}</h3>
-                    <p className="text-sm text-gray-600">{property.location}</p>
+                    <p className="text-xs text-gray-500 mb-1">
+                      <MapPin className="h-3 w-3 inline mr-1" />
+                      {property.location}
+                    </p>
+                    <h3 className="font-semibold text-lg text-gray-900">{property.title}</h3>
+                    <div className="flex items-center gap-1 mt-1">
+                      <CheckCircle className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm font-semibold">4.96</span>
+                      <span className="text-xs text-gray-500">(124 reviews)</span>
+                    </div>
                   </div>
 
                   <div className="border-t pt-4 space-y-3">

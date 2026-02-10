@@ -161,32 +161,40 @@ const BookingConfirmation = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           {/* Success Header */}
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-              <CheckCircle className="h-12 w-12 text-green-600" />
+          <div className="text-center mb-10">
+            <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="h-14 w-14 text-green-600" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-primary mb-2">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Booking Confirmed!
             </h1>
-            <p className="text-gray-600 text-lg">
-              Your payment was successful. We've sent a confirmation email to{' '}
-              <span className="font-semibold">{guestEmail}</span>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              We've sent a confirmation email to{' '}
+              <span className="font-semibold text-gray-900">{guestEmail}</span>
             </p>
           </div>
 
           {/* Booking Reference */}
-          <Card className="mb-6">
-            <CardContent className="p-6">
+          <Card className="mb-8 border-0 shadow-lg">
+            <CardContent className="p-8">
               <div className="text-center">
-                <p className="text-sm text-gray-600 mb-2">Your Booking Reference</p>
-                <div className="inline-block bg-primary/10 px-6 py-3 rounded-lg">
-                  <p className="text-2xl font-bold text-primary font-mono">
+                <p className="text-sm text-gray-600 uppercase tracking-wide mb-3">Booking Reference</p>
+                <div className="inline-block bg-accent/10 px-8 py-4 rounded-xl">
+                  <p className="text-3xl font-bold text-accent font-mono tracking-wider">
                     {bookingReference}
                   </p>
                 </div>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-gray-500 mt-3">
                   Save this for your records
                 </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-3"
+                  onClick={() => navigator.clipboard.writeText(bookingReference)}
+                >
+                  Copy
+                </Button>
               </div>
             </CardContent>
           </Card>

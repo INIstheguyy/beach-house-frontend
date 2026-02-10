@@ -29,7 +29,7 @@ async getById(id: string): Promise<Property> {
 },
   // Check availability
   async checkAvailability(
-    propertyDocumentId: string,
+    propertyDocumentId: number,
     checkIn: string,
     checkOut: string
   ): Promise<AvailabilityResponse> {
