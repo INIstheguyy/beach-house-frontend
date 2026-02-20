@@ -1,111 +1,93 @@
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Menu, X, Home as HomeIcon } from 'lucide-react';
-import { useState } from 'react';
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Home as HomeIcon, Search, Info, MapPin } from "lucide-react";
 
 const Header = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // Navigation items with icons for mobile and labels for desktop
+  const navItems = [
+    { label: "About us", path: "/", icon: HomeIcon },
+    { label: "Apartments", path: "/properties", icon: Search },
+
+    { label: "Contact", path: "/about", icon: Info },
+  ];
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="flex items-center gap-2">
-              <HomeIcon className="h-6 w-6 text-accent" />
-              <span className="text-xl font-bold text-primary">Lagos Beach Stays</span>
-            </div>
+    <div className="fixed top-6 left-0 right-0 z-50 px-4 pointer-events-none max-w-3xl mx-auto">
+      <header
+        className={`
+          max-w-5xl mx-auto h-14 md:h-16
+          bg-white/90  shadow-lg border border-white/20
+          rounded-lg md:rounded-[1.5rem]
+          flex items-center justify-between px-4 md:px-8
+          text-accent pointer-events-auto
+          transition-all duration-500
+        `}
+      >
+        {/* Logo Section */}
+        <div className="flex-1 flex justify-start">
+          <Link to="/" className="flex items-center gap-2 group">
+            {/* Mobile Logo: "LE" */}
+            <span className={`md:hidden text-2xl font-black tracking-tighter`}>
+              LE
+            </span>
+            {/* Desktop Logo: "Luxury Exxentials" */}
+            <span
+              className={`hidden md:block text-lg font-extrabold tracking-tight whitespace-nowrap`}
+            >
+              Luxury Exxentials
+            </span>
           </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link 
-              to="/" 
-              className="text-sm font-medium text-gray-700 hover:text-accent transition-colors"
-            >
-              Homes
-            </Link>
-            <Link 
-              to="/properties" 
-              className="text-sm font-medium text-gray-700 hover:text-accent transition-colors"
-            >
-              Apartments
-            </Link>
-            <Link 
-              to="/properties" 
-              className="text-sm font-medium text-gray-700 hover:text-accent transition-colors"
-            >
-              Experiences
-            </Link>
-            <Link 
-              to="/about" 
-              className="text-sm font-medium text-gray-700 hover:text-accent transition-colors"
-            >
-              Design System
-            </Link>
-          </nav>
-
-          {/* Desktop CTA */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button size="sm" className="bg-primary hover:bg-primary-600 text-white rounded-lg">
-              Sign In
-            </Button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6 text-gray-700" />
-            ) : (
-              <Menu className="h-6 w-6 text-gray-700" />
-            )}
-          </button>
         </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-4 border-t">
-            <Link 
-              to="/" 
-              className="block py-2 text-base font-medium text-gray-700 hover:text-accent"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Homes
-            </Link>
-            <Link 
-              to="/properties" 
-              className="block py-2 text-base font-medium text-gray-700 hover:text-accent"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Apartments
-            </Link>
-            <Link 
-              to="/properties" 
-              className="block py-2 text-base font-medium text-gray-700 hover:text-accent"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Experiences
-            </Link>
-            <Link 
-              to="/about" 
-              className="block py-2 text-base font-medium text-gray-700 hover:text-accent"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Design System
-            </Link>
-            <div className="pt-4">
-              <Button className="w-full bg-primary hover:bg-primary-600 text-white">
-                Sign In
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-    </header>
+        {/* Centered Navigation */}
+        <nav className="flex items-center gap-1 md:gap-2 bg-gray-50/50 p-1 rounded-full border border-gray-100">
+          {navItems.map((link) => {
+            const isActive = location.pathname === link.path;
+            return (
+              <Link
+                key={link.label}
+                to={link.path}
+                className={`
+                  flex items-center justify-center
+                  rounded-full transition-all duration-300
+                  px-3 py-2 md:px-5 md:py-2
+                  ${
+                    isActive
+                      ? "bg-accent text-white shadow-md shadow-accent/20"
+                      : "hover:bg-accent/5 hover:text-accent"
+                  }
+                `}
+                title={link.label}
+              >
+                {/* Mobile: Icon Only */}
+                <link.icon className="md:hidden h-5 w-5" />
+
+                {/* Desktop: Text Only */}
+                <span className="hidden md:block text-xs font-bold tracking-wide uppercase">
+                  {link.label}
+                </span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* CTA Buttons - Desktop Only */}
+        <div className="flex-1 hidden md:flex items-center justify-end">
+          <Button className="bg-accent hover:bg-accent-700 text-white rounded-full px-6 py-2 text-xs font-bold shadow-lg shadow-accent/20 transition-all transform hover:scale-105">
+            Host with us
+          </Button>
+        </div>
+
+        {/* Mobile Host Button - Visible only on mobile */}
+        <div className="md:hidden flex-1 flex justify-end">
+          <Button className="bg-accent hover:bg-accent-700 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md transition-all">
+            Host
+          </Button>
+        </div>
+      </header>
+    </div>
   );
 };
 

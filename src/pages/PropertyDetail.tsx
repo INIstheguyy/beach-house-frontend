@@ -32,7 +32,7 @@ const PropertyDetail = () => {
   const [checkIn, setCheckIn] = useState<Date | null>(null);
   const [checkOut, setCheckOut] = useState<Date | null>(null);
   const [availability, setAvailability] = useState<AvailabilityResponse | null>(
-    null
+    null,
   );
   const [checkingAvailability, setCheckingAvailability] = useState(false);
 
@@ -62,11 +62,11 @@ const PropertyDetail = () => {
       setCheckingAvailability(true);
       console.log(property.id);
       console.log(formatDateForAPI(checkIn));
-      console.log(formatDateForAPI(checkOut)  );
+      console.log(formatDateForAPI(checkOut));
       const result = await propertyService.checkAvailability(
         property.id,
         formatDateForAPI(checkIn),
-        formatDateForAPI(checkOut)
+        formatDateForAPI(checkOut),
       );
       console.log("Availability result:", result);
       setAvailability(result);
@@ -140,7 +140,7 @@ const PropertyDetail = () => {
   const attr = property;
   const imageUrl = attr.featuredPhoto?.url || attr.photos?.[1]?.url;
   const fullImageUrl = imageUrl
-    ? `${import.meta.env.VITE_STRAPI_URL}${imageUrl}`
+    ? `${import.meta.env.VITE_STRAPI_URL || ""}${imageUrl}`
     : "https://via.placeholder.com/800x600?text=No+Image";
 
   const nights = checkIn && checkOut ? calculateNights(checkIn, checkOut) : 0;
@@ -395,7 +395,7 @@ const PropertyDetail = () => {
                 <p className="text-sm text-gray-500 text-center mt-3">
                   You won't be charged yet
                 </p>
-                
+
                 {/* Trust Badges */}
                 <div className="mt-6 pt-6 border-t space-y-3">
                   <div className="flex items-center gap-3 text-sm text-gray-700">

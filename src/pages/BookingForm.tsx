@@ -1,14 +1,25 @@
-import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { bookingService } from '@/services/bookingService';
-import { formatPrice } from '@/utils/priceHelpers';
-import { formatDate, calculateNights } from '@/utils/dateHelpers';
-import { ArrowLeft, User, Mail, Phone, Users, Calendar, CreditCard, Shield, MapPin, CheckCircle } from 'lucide-react';
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { bookingService } from "@/services/bookingService";
+import { formatPrice } from "@/utils/priceHelpers";
+import { formatDate, calculateNights } from "@/utils/dateHelpers";
+import {
+  ArrowLeft,
+  User,
+  Mail,
+  Phone,
+  Users,
+  Calendar,
+  CreditCard,
+  Shield,
+  MapPin,
+  CheckCircle,
+} from "lucide-react";
 
 interface LocationState {
   property: any;
@@ -24,17 +35,17 @@ const BookingForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    name: "",
+    email: "",
+    phone: "",
     numberOfGuests: 1,
-    specialRequests: '',
+    specialRequests: "",
   });
 
   const [errors, setErrors] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    name: "",
+    email: "",
+    phone: "",
   });
 
   // If no booking data, redirect back
@@ -43,8 +54,10 @@ const BookingForm = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Card>
           <CardContent className="p-12 text-center">
-            <p className="text-gray-600 mb-4">No booking data found. Please start from property page.</p>
-            <Button onClick={() => navigate('/properties')}>
+            <p className="text-gray-600 mb-4">
+              No booking data found. Please start from property page.
+            </p>
+            <Button onClick={() => navigate("/properties")}>
               Browse Properties
             </Button>
           </CardContent>
@@ -57,46 +70,48 @@ const BookingForm = () => {
   const nights = calculateNights(checkIn, checkOut);
   const totalAmount = nights * property.pricePerNight;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
     // Clear error when user starts typing
     if (errors[name as keyof typeof errors]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: '',
+        [name]: "",
       }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {
-      name: '',
-      email: '',
-      phone: '',
+      name: "",
+      email: "",
+      phone: "",
     };
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = "Name is required";
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Invalid email address';
+      newErrors.email = "Invalid email address";
     }
 
     if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
+      newErrors.phone = "Phone number is required";
     } else if (!/^\+?[\d\s-]{10,}$/.test(formData.phone)) {
-      newErrors.phone = 'Invalid phone number';
+      newErrors.phone = "Invalid phone number";
     }
 
     setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error !== '');
+    return !Object.values(newErrors).some((error) => error !== "");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -123,17 +138,19 @@ const BookingForm = () => {
       };
 
       const response = await bookingService.initialize(bookingData);
-      
+
       // Redirect to Flutterwave payment page
       if (response.paymentLink) {
         window.location.href = response.paymentLink;
       } else {
-        alert('Failed to initialize payment. Please try again.');
+        alert("Failed to initialize payment. Please try again.");
         setLoading(false);
       }
     } catch (error: any) {
-      console.error('Booking failed:', error);
-      const errorMessage = error.response?.data?.error?.message || 'Booking failed. Please try again.';
+      console.error("Booking failed:", error);
+      const errorMessage =
+        error.response?.data?.error?.message ||
+        "Booking failed. Please try again.";
       console.log(errorMessage);
       alert(errorMessage);
       setLoading(false);
@@ -179,21 +196,27 @@ const BookingForm = () => {
                   <div className="w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center text-sm font-semibold">
                     1
                   </div>
-                  <span className="text-sm font-medium text-accent">Details</span>
+                  <span className="text-sm font-medium text-accent">
+                    Details
+                  </span>
                 </div>
                 <div className="w-12 h-0.5 bg-gray-300"></div>
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold">
                     2
                   </div>
-                  <span className="text-sm font-medium text-gray-600">Payment</span>
+                  <span className="text-sm font-medium text-gray-600">
+                    Payment
+                  </span>
                 </div>
                 <div className="w-12 h-0.5 bg-gray-300"></div>
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold">
                     3
                   </div>
-                  <span className="text-sm font-medium text-gray-600">Confirm</span>
+                  <span className="text-sm font-medium text-gray-600">
+                    Confirm
+                  </span>
                 </div>
               </div>
             </div>
@@ -229,7 +252,11 @@ const BookingForm = () => {
                           placeholder="John Doe"
                         />
                       </div>
-                      {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                      {errors.name && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.name}
+                        </p>
+                      )}
                     </div>
 
                     {/* Email */}
@@ -249,7 +276,11 @@ const BookingForm = () => {
                           placeholder="john@example.com"
                         />
                       </div>
-                      {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                      {errors.email && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.email}
+                        </p>
+                      )}
                     </div>
 
                     {/* Phone */}
@@ -269,7 +300,11 @@ const BookingForm = () => {
                           placeholder="+234 801 234 5678"
                         />
                       </div>
-                      {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+                      {errors.phone && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.phone}
+                        </p>
+                      )}
                     </div>
 
                     {/* Number of Guests */}
@@ -347,23 +382,31 @@ const BookingForm = () => {
                   {/* Property Image */}
                   <div className="relative h-48 rounded-lg overflow-hidden">
                     <img
-                      src={property.featuredPhoto?.url ? `${import.meta.env.VITE_STRAPI_URL}${property.featuredPhoto.url}` : 'https://picsum.photos/400/300'}
+                      src={
+                        property.featuredPhoto?.url
+                          ? `${import.meta.env.VITE_STRAPI_URL || ""}${property.featuredPhoto.url}`
+                          : "https://picsum.photos/400/300"
+                      }
                       alt={property.title}
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  
+
                   {/* Property Info */}
                   <div>
                     <p className="text-xs text-gray-500 mb-1">
                       <MapPin className="h-3 w-3 inline mr-1" />
                       {property.location}
                     </p>
-                    <h3 className="font-semibold text-lg text-gray-900">{property.title}</h3>
+                    <h3 className="font-semibold text-lg text-gray-900">
+                      {property.title}
+                    </h3>
                     <div className="flex items-center gap-1 mt-1">
                       <CheckCircle className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       <span className="text-sm font-semibold">4.96</span>
-                      <span className="text-xs text-gray-500">(124 reviews)</span>
+                      <span className="text-xs text-gray-500">
+                        (124 reviews)
+                      </span>
                     </div>
                   </div>
 
@@ -389,7 +432,9 @@ const BookingForm = () => {
                       <Users className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                       <div className="text-sm">
                         <p className="font-semibold">Nights</p>
-                        <p className="text-gray-600">{nights} night{nights !== 1 ? 's' : ''}</p>
+                        <p className="text-gray-600">
+                          {nights} night{nights !== 1 ? "s" : ""}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -398,14 +443,19 @@ const BookingForm = () => {
                   <div className="border-t pt-4 space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">
-                        {formatPrice(property.pricePerNight)} × {nights} night{nights !== 1 ? 's' : ''}
+                        {formatPrice(property.pricePerNight)} × {nights} night
+                        {nights !== 1 ? "s" : ""}
                       </span>
-                      <span className="font-semibold">{formatPrice(totalAmount)}</span>
+                      <span className="font-semibold">
+                        {formatPrice(totalAmount)}
+                      </span>
                     </div>
 
                     <div className="flex justify-between font-bold text-lg pt-3 border-t">
                       <span>Total</span>
-                      <span className="text-primary">{formatPrice(totalAmount)}</span>
+                      <span className="text-primary">
+                        {formatPrice(totalAmount)}
+                      </span>
                     </div>
                   </div>
 

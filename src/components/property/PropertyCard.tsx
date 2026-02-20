@@ -1,11 +1,11 @@
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { MapPin, Users, Bed, Bath, Heart, Star } from 'lucide-react';
-import { formatPrice } from '@/utils/priceHelpers';
-import type { Property } from '@/types';
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { MapPin, Users, Bed, Bath, Heart, Star } from "lucide-react";
+import { formatPrice } from "@/utils/priceHelpers";
+import type { Property } from "@/types";
 
 interface PropertyCardProps {
   property: Property;
@@ -13,12 +13,11 @@ interface PropertyCardProps {
 
 const PropertyCard = ({ property }: PropertyCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
-  
-  const imageUrl = property.featuredPhoto?.url ||
-                  property.photos?.[0]?.url;
-  const fullImageUrl = imageUrl 
-    ? `${import.meta.env.VITE_STRAPI_URL}${imageUrl}`
-    : 'https://via.placeholder.com/400x300?text=No+Image';
+
+  const imageUrl = property.featuredPhoto?.url || property.photos?.[0]?.url;
+  const fullImageUrl = imageUrl
+    ? `${import.meta.env.VITE_STRAPI_URL || ""}${imageUrl}`
+    : "https://via.placeholder.com/400x300?text=No+Image";
 
   // Random rating for demonstration (you can replace with actual rating from data)
   const rating = (4.5 + Math.random() * 0.5).toFixed(1);
@@ -34,7 +33,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
             alt={property.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
-          
+
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
             {Math.random() > 0.7 && (
@@ -48,7 +47,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
               </Badge>
             )}
           </div>
-          
+
           {/* Favorite Icon */}
           <button
             onClick={(e) => {
@@ -59,7 +58,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
           >
             <Heart
               className={`h-5 w-5 transition-colors ${
-                isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-700'
+                isFavorite ? "fill-red-500 text-red-500" : "text-gray-700"
               }`}
             />
           </button>
@@ -71,7 +70,9 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center text-gray-600">
               <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-              <span className="text-sm font-medium truncate">{property.location}</span>
+              <span className="text-sm font-medium truncate">
+                {property.location}
+              </span>
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
