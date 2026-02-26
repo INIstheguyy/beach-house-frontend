@@ -1,9 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Home as HomeIcon, Search, Info, MapPin } from "lucide-react";
 
 const Header = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Navigation items with icons for mobile and labels for desktop
   const navItems = [
@@ -42,7 +44,7 @@ const Header = () => {
         </div>
 
         {/* Centered Navigation */}
-        <nav className="flex items-center gap-1 md:gap-2 bg-gray-50/50 p-1 rounded-full border border-gray-100">
+        {/* <nav className="flex items-center gap-1 md:gap-2 bg-gray-50/50 p-1 rounded-full border border-gray-100">
           {navItems.map((link) => {
             const isActive = location.pathname === link.path;
             return (
@@ -61,29 +63,28 @@ const Header = () => {
                 `}
                 title={link.label}
               >
-                {/* Mobile: Icon Only */}
+           
                 <link.icon className="md:hidden h-5 w-5" />
 
-                {/* Desktop: Text Only */}
                 <span className="hidden md:block text-xs font-bold tracking-wide uppercase">
                   {link.label}
                 </span>
               </Link>
             );
           })}
-        </nav>
+        </nav> */}
 
         {/* CTA Buttons - Desktop Only */}
         <div className="flex-1 hidden md:flex items-center justify-end">
-          <Button className="bg-accent hover:bg-accent-700 text-white rounded-full px-6 py-2 text-xs font-bold shadow-lg shadow-accent/20 transition-all transform hover:scale-105">
-            Host with us
+          <Button onClick={() => navigate("/properties")} className="bg-accent hover:bg-accent-700 text-white rounded-full px-6 py-2 text-xs font-bold shadow-lg shadow-accent/20 transition-all transform hover:scale-105">
+           Book a Property
           </Button>
         </div>
 
         {/* Mobile Host Button - Visible only on mobile */}
         <div className="md:hidden flex-1 flex justify-end">
-          <Button className="bg-accent hover:bg-accent-700 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md transition-all">
-            Host
+          <Button onClick={() => navigate("/properties")} className="bg-accent hover:bg-accent-700 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md transition-all">
+             Book a Property
           </Button>
         </div>
       </header>

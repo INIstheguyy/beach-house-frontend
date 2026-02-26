@@ -127,9 +127,9 @@ const Home = () => {
       {/* Featured Properties Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <div className="mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold text-primary mb-4 font-heading">
-              Featured Properties
+          <div className="mb-12 flex flex-col items-top md:flex-row md:justify-between">
+            <h2 className="text-3xl md:text-5xl md:max-w-2xl font-bold text-primary mb-4 font-heading">
+              Our top rental vacation Properties
             </h2>
             <p className="text-gray-600 text-lg max-w-xl">
               Hand-picked luxury homes for your next vacation
@@ -189,150 +189,18 @@ const Home = () => {
           )}
 
           {/* Mobile View All Button */}
-          {/* <div className="mt-8 text-center md:hidden">
+          <div className="mt-8 text-center md:hidden">
             <Link to="/properties">
               <Button className="bg-accent hover:bg-accent-600">
                 View All Properties
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-          </div> */}
+          </div>
         </div>
       </section>
 
-      {/* How It Works Section */}
-      {/* <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-              Book Your Stay in 3 Easy Steps
-            </h2>
-            <p className="text-gray-600 text-lg">
-              Experience a hassle-free booking journey from search to stay
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-         
-            <div className="text-center">
-              <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Search className="h-10 w-10 text-accent" />
-              </div>
-              <div className="mb-4">
-                <span className="text-5xl font-bold text-accent">1</span>
-                <span className="text-lg font-semibold text-gray-700 ml-2">
-                  Search
-                </span>
-              </div>
-              <p className="text-gray-600">
-                Browse our curated collection of luxury beach houses and
-                apartments in Lagos
-              </p>
-            </div>
-
-           
-            <div className="text-center">
-              <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Calendar className="h-10 w-10 text-accent" />
-              </div>
-              <div className="mb-4">
-                <span className="text-5xl font-bold text-accent">2</span>
-                <span className="text-lg font-semibold text-gray-700 ml-2">
-                  Select
-                </span>
-              </div>
-              <p className="text-gray-600">
-                Choose your perfect property and book securely with instant
-                confirmation
-              </p>
-            </div>
-
-            
-            <div className="text-center">
-              <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <HomeIcon className="h-10 w-10 text-accent" />
-              </div>
-              <div className="mb-4">
-                <span className="text-5xl font-bold text-accent">3</span>
-                <span className="text-lg font-semibold text-gray-700 ml-2">
-                  Enjoy
-                </span>
-              </div>
-              <p className="text-gray-600">
-                Arrive and enjoy a premium experience at your chosen property
-              </p>
-            </div>
-          </div>
-        </div>
-      </section> */}
-
-     
-      {/* <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-              Why Choose Lagos Beach Rentals?
-            </h2>
-            <p className="text-gray-600 text-lg">
-              Your trusted partner for premium beachfront accommodations
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="text-center border-0 shadow-md hover:shadow-lg transition-shadow">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <HomeIcon className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">
-                  Verified Properties
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Every listing is thoroughly vetted for quality and
-                  authenticity
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center border-0 shadow-md hover:shadow-lg transition-shadow">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CreditCard className="h-8 w-8 text-success" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Secure Payment</h3>
-                <p className="text-gray-600 text-sm">
-                  Safe transactions powered by Flutterwave payment gateway
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center border-0 shadow-md hover:shadow-lg transition-shadow">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Shield className="h-8 w-8 text-accent" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Instant Booking</h3>
-                <p className="text-gray-600 text-sm">
-                  Get immediate confirmation and start planning your getaway
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center border-0 shadow-md hover:shadow-lg transition-shadow">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-warning/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Headphones className="h-8 w-8 text-warning" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">24/7 Support</h3>
-                <p className="text-gray-600 text-sm">
-                  Our dedicated team is always here to assist you
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section> */}
-
+   
      
       <section className="py-20 bg-gradient-to-r from-accent via-accent-600 to-accent-700 text-white">
         <div className="container mx-auto px-4 text-center">
