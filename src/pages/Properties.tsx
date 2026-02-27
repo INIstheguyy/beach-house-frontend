@@ -122,8 +122,8 @@ const Properties = () => {
         {/* Header - Hidden on mobile to save space */}
         <div className="mb-8 md:mb-12 hidden md:flex flex-row justify-between items-start md:items-end gap-4">
           <div>
-            <h2 className="text-3xl md:text-5xl w-3/5 font-bold text-primary mb-4 font-heading">
-              Holiday accommodation recommendations for you
+            <h2 className="text-3xl md:text-5xl   font-bold text-primary mb-4 font-heading">
+               Recommendations for you
             </h2>
           </div>
           <div className="flex items-center gap-4">

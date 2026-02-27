@@ -33,7 +33,7 @@ const FilterHero = ({ filters, onFilterChange, onSearch }: FilterHeroProps) => {
               "url('https://images.pexels.com/photos/31362226/pexels-photo-31362226.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')",
           }}
         >
-          <div className="absolute inset-0 bg-black/30 rounded-b-[3rem]" />
+          <div className="absolute inset-0  rounded-b-[3rem]" />
         </div>
 
         {/* Desktop/Tablet Content */}
@@ -46,7 +46,7 @@ const FilterHero = ({ filters, onFilterChange, onSearch }: FilterHeroProps) => {
         </div>
 
         {/* Mobile Content - Taller image */}
-        <div className="relative z-10 pt-14 pb-48 md:hidden">
+        <div className="relative z-10 pt-14 pb-32 md:hidden">
           <div className="container mx-auto px-4">
             <h1 className="text-3xl font-bold text-white pt-6">Properties</h1>
           </div>
@@ -247,7 +247,7 @@ const FilterHero = ({ filters, onFilterChange, onSearch }: FilterHeroProps) => {
               onClick={() => setExpandedMobile(!expandedMobile)}
               className="w-full flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
             >
-              <span>More Filters</span>
+              <span>More </span>
               {expandedMobile ? (
                 <ChevronUp className="h-4 w-4" />
               ) : (

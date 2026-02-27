@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import StackedPhotoGallery from "@/components/property/StackedPhotoGallery";
 
 const PropertyDetail = () => {
   const { documentId } = useParams<{ documentId: string }>();
@@ -138,10 +139,13 @@ const PropertyDetail = () => {
   }
 
   const attr = property;
-  const imageUrl = attr.featuredPhoto?.url || attr.photos?.[1]?.url;
+  const imageUrl = attr.featuredPhoto?.url || attr.photos?.[0]?.url;
   const fullImageUrl = imageUrl
     ? `${import.meta.env.VITE_STRAPI_URL || ""}${imageUrl}`
     : "https://via.placeholder.com/800x600?text=No+Image";
+
+  // Prepare all photos for stacked gallery
+  const allPhotos = attr.photos && attr.photos.length > 0 ? attr.photos : [];
 
   const nights = checkIn && checkOut ? calculateNights(checkIn, checkOut) : 0;
   const totalAmount = nights * attr.pricePerNight;
@@ -175,240 +179,290 @@ const PropertyDetail = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content - Left Column */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Image Gallery */}
-            <Card className="overflow-hidden">
-              <img
-                src={fullImageUrl}
-                alt={attr.title}
-                className="w-full h-96 object-cover"
-              />
-            </Card>
+      {/* Photo Gallery Section */}
+      <div className="w-full px-4 py-6 md:py-8 lg:py-10">
+        <div className="mx-auto max-w-7xl">
+          {/* Desktop Layout (lg+): Featured + Stacked side-by-side */}
+          <div className="hidden lg:grid lg:grid-cols-3 gap-8">
+            {/* Featured Photo - Left (2/3 width) */}
+            <div className="lg:col-span-2">
+              <Card className="overflow-hidden aspect-[4/3]">
+                <img
+                  src={fullImageUrl}
+                  alt={attr.title}
+                  className="w-full h-full object-cover"
+                />
+              </Card>
+            </div>
 
-            {/* Property Header */}
-            <div>
-              <div className="mb-4">
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            {/* Stacked Gallery - Right (1/3 width) */}
+            <div className="lg:col-span-1">
+              <StackedPhotoGallery
+                photos={allPhotos}
+                baseUrl={import.meta.env.VITE_STRAPI_URL || ""}
+              />
+            </div>
+          </div>
+
+          {/* Tablet Layout (md-lg): Stacked vertically */}
+          <div className="hidden md:grid lg:hidden grid-cols-1 gap-6">
+            {/* Featured Photo */}
+            <div className="w-full">
+              <Card className="overflow-hidden aspect-[16/9]">
+                <img
+                  src={fullImageUrl}
+                  alt={attr.title}
+                  className="w-full h-full object-cover"
+                />
+              </Card>
+            </div>
+
+            {/* Stacked Gallery */}
+            <div className="w-full md:max-w-md mx-auto">
+              <StackedPhotoGallery
+                photos={allPhotos}
+                baseUrl={import.meta.env.VITE_STRAPI_URL || ""}
+              />
+            </div>
+          </div>
+
+          {/* Mobile Layout (sm): Only Stacked Gallery */}
+          <div className="md:hidden">
+            <StackedPhotoGallery
+              photos={allPhotos}
+              baseUrl={import.meta.env.VITE_STRAPI_URL || ""}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Section */}
+      <div className="w-full bg-gray-50 px-4 py-8 md:py-10 lg:py-12">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+            {/* Main Content Column (lg: 2/3) */}
+            <div className="lg:col-span-2 space-y-6 md:space-y-8">
+              {/* Property Header */}
+              <div>
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
                   {attr.title}
                 </h1>
-                <div className="flex items-center gap-4 text-gray-600 mb-3">
-                  <div className="flex items-center gap-1">
+                <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 text-gray-600 mb-4">
+                  {/* <div className="flex items-center gap-1">
                     <CheckCircle className="h-5 w-5 text-yellow-400 fill-yellow-400" />
                     <span className="font-semibold">4.96</span>
                     <span className="text-sm">(128 reviews)</span>
-                  </div>
-                  <div className="flex items-center">
-                    <MapPin className="h-5 w-5 mr-1" />
+                  </div> */}
+                  <div className="flex items-center gap-1">
+                    <MapPin className="h-5 w-5" />
                     <span>{attr.location}</span>
                   </div>
-                  <span className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-semibold">
-                    SUPERHOST
-                  </span>
+                
                 </div>
               </div>
 
               {/* Quick Stats */}
-              <div className="flex flex-wrap gap-6 text-gray-700">
-                <div className="flex items-center">
-                  <Bed className="h-5 w-5 mr-2 text-primary" />
-                  <span className="font-semibold">
-                    {attr.bedrooms} Bedrooms
-                  </span>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                <div className="flex items-center gap-2">
+                  <Bed className="h-5 w-5 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-gray-600">Bedrooms</p>
+                    <span className="font-semibold text-gray-900">{attr.bedrooms}</span>
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  <Bath className="h-5 w-5 mr-2 text-primary" />
-                  <span className="font-semibold">
-                    {attr.bathrooms} Bathrooms
-                  </span>
+                <div className="flex items-center gap-2">
+                  <Bath className="h-5 w-5 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-gray-600">Bathrooms</p>
+                    <span className="font-semibold text-gray-900">{attr.bathrooms}</span>
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  <Users className="h-5 w-5 mr-2 text-primary" />
-                  <span className="font-semibold">
-                    Max {attr.maxGuests} Guests
-                  </span>
+                <div className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-gray-600">Max Guests</p>
+                    <span className="font-semibold text-gray-900">{attr.maxGuests}</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Description */}
-            <Card>
-              <CardHeader>
-                <CardTitle>About this property</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className="prose max-w-none text-gray-700"
-                  dangerouslySetInnerHTML={{ __html: attr.description }}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Amenities */}
-            {attr.amenities && attr.amenities.length > 0 && (
+              {/* Description */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Amenities</CardTitle>
+                  <CardTitle className="text-lg md:text-xl">About this property</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {attr.amenities.map((amenity, index) => {
-                      const Icon = amenityIcons[amenity] || CheckCircle;
-                      return (
-                        <div
-                          key={index}
-                          className="flex items-center text-gray-700"
-                        >
-                          <Icon className="h-5 w-5 mr-2 text-accent" />
-                          <span>{amenity}</span>
+                  <div
+                    className="prose prose-sm md:prose-base max-w-none text-gray-700"
+                    dangerouslySetInnerHTML={{ __html: attr.description }}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Amenities */}
+              {attr.amenities && attr.amenities.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg md:text-xl">Amenities</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                      {attr.amenities.map((amenity, index) => {
+                        const Icon = amenityIcons[amenity] || CheckCircle;
+                        return (
+                          <div
+                            key={index}
+                            className="flex items-center gap-2 text-sm md:text-base text-gray-700"
+                          >
+                            <Icon className="h-4 w-4 md:h-5 md:w-5 text-accent flex-shrink-0" />
+                            <span>{amenity}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Booking Widget Column (lg: 1/3, sticky on desktop) */}
+            <div className="lg:col-span-1">
+              <Card className="lg:sticky lg:top-24">
+                <CardContent className="p-4 md:p-6">
+                  <div className="mb-6">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-primary">
+                        {formatPrice(attr.pricePerNight)}
+                      </span>
+                      <span className="text-gray-600">/night</span>
+                    </div>
+                  </div>
+
+                  {/* Date Pickers */}
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <Label className="mb-2 block">Check-in</Label>
+                      <DatePicker
+                        selected={checkIn}
+                        onChange={(date: SetStateAction<Date | null>) =>
+                          setCheckIn(date)
+                        }
+                        selectsStart
+                        startDate={checkIn}
+                        endDate={checkOut}
+                        minDate={new Date()}
+                        placeholderText="Select check-in date"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        dateFormat="MMM dd, yyyy"
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="mb-2 block">Check-out</Label>
+                      <DatePicker
+                        selected={checkOut}
+                        onChange={(date: SetStateAction<Date | null>) =>
+                          setCheckOut(date)
+                        }
+                        selectsEnd
+                        startDate={checkIn}
+                        endDate={checkOut}
+                        minDate={checkIn || new Date()}
+                        placeholderText="Select check-out date"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        dateFormat="MMM dd, yyyy"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Availability Status */}
+                  {checkIn && checkOut && (
+                    <div className="mb-6">
+                      {checkingAvailability ? (
+                        <div className="text-center py-4">
+                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                          <p className="text-sm text-gray-600 mt-2">
+                            Checking availability...
+                          </p>
                         </div>
-                      );
-                    })}
+                      ) : availability ? (
+                        <div
+                          className={`p-4 rounded-lg ${
+                            availability.available
+                              ? "bg-green-50 border border-green-200"
+                              : "bg-red-50 border border-red-200"
+                          }`}
+                        >
+                          <div className="flex items-center">
+                            {availability.available ? (
+                              <>
+                                <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+                                <span className="text-green-800 font-semibold">
+                                  Available!
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="h-5 w-5 text-red-600 mr-2" />
+                                <span className="text-red-800 font-semibold">
+                                  Not available
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+
+                  {/* Price Breakdown */}
+                  {nights > 0 && (
+                    <div className="mb-6 space-y-3 pt-6 border-t">
+                      <div className="flex justify-between text-gray-700">
+                        <span>
+                          {formatPrice(attr.pricePerNight)} × {nights} night
+                          {nights !== 1 ? "s" : ""}
+                        </span>
+                        <span>{formatPrice(attr.pricePerNight * nights)}</span>
+                      </div>
+                      <div className="flex justify-between font-bold text-lg pt-3 border-t">
+                        <span>Total</span>
+                        <span className="text-primary">
+                          {formatPrice(totalAmount)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Book Button */}
+                  <Button
+                    className="w-full bg-accent hover:bg-accent-600 text-white"
+                    size="lg"
+                    onClick={handleBookNow}
+                    disabled={!availability?.available || !checkIn || !checkOut}
+                  >
+                    <CheckCircle className="h-5 w-5 mr-2" />
+                    Reserve
+                  </Button>
+
+                  <p className="text-sm text-gray-500 text-center mt-3">
+                    You won't be charged yet
+                  </p>
+
+                  {/* Trust Badges */}
+                  <div className="mt-6 pt-6 border-t space-y-3">
+                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                      <Shield className="h-5 w-5 text-success" />
+                      <span>Secure payment</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                      <CheckCircle className="h-5 w-5 text-success" />
+                      <span>Instant confirm</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-            )}
-          </div>
-
-          {/* Booking Widget - Right Column (Sticky) */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-24">
-              <CardContent className="p-6">
-                <div className="mb-6">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold text-primary">
-                      {formatPrice(attr.pricePerNight)}
-                    </span>
-                    <span className="text-gray-600">/night</span>
-                  </div>
-                </div>
-
-                {/* Date Pickers */}
-                <div className="space-y-4 mb-6">
-                  <div>
-                    <Label className="mb-2 block">Check-in</Label>
-                    <DatePicker
-                      selected={checkIn}
-                      onChange={(date: SetStateAction<Date | null>) =>
-                        setCheckIn(date)
-                      }
-                      selectsStart
-                      startDate={checkIn}
-                      endDate={checkOut}
-                      minDate={new Date()}
-                      placeholderText="Select check-in date"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                      dateFormat="MMM dd, yyyy"
-                    />
-                  </div>
-
-                  <div>
-                    <Label className="mb-2 block">Check-out</Label>
-                    <DatePicker
-                      selected={checkOut}
-                      onChange={(date: SetStateAction<Date | null>) =>
-                        setCheckOut(date)
-                      }
-                      selectsEnd
-                      startDate={checkIn}
-                      endDate={checkOut}
-                      minDate={checkIn || new Date()}
-                      placeholderText="Select check-out date"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                      dateFormat="MMM dd, yyyy"
-                    />
-                  </div>
-                </div>
-
-                {/* Availability Status */}
-                {checkIn && checkOut && (
-                  <div className="mb-6">
-                    {checkingAvailability ? (
-                      <div className="text-center py-4">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-                        <p className="text-sm text-gray-600 mt-2">
-                          Checking availability...
-                        </p>
-                      </div>
-                    ) : availability ? (
-                      <div
-                        className={`p-4 rounded-lg ${
-                          availability.available
-                            ? "bg-green-50 border border-green-200"
-                            : "bg-red-50 border border-red-200"
-                        }`}
-                      >
-                        <div className="flex items-center">
-                          {availability.available ? (
-                            <>
-                              <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                              <span className="text-green-800 font-semibold">
-                                Available!
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="h-5 w-5 text-red-600 mr-2" />
-                              <span className="text-red-800 font-semibold">
-                                Not available
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-                )}
-
-                {/* Price Breakdown */}
-                {nights > 0 && (
-                  <div className="mb-6 space-y-3 pt-6 border-t">
-                    <div className="flex justify-between text-gray-700">
-                      <span>
-                        {formatPrice(attr.pricePerNight)} × {nights} night
-                        {nights !== 1 ? "s" : ""}
-                      </span>
-                      <span>{formatPrice(attr.pricePerNight * nights)}</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-lg pt-3 border-t">
-                      <span>Total</span>
-                      <span className="text-primary">
-                        {formatPrice(totalAmount)}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Book Button */}
-                <Button
-                  className="w-full bg-accent hover:bg-accent-600 text-white"
-                  size="lg"
-                  onClick={handleBookNow}
-                  disabled={!availability?.available || !checkIn || !checkOut}
-                >
-                  <CheckCircle className="h-5 w-5 mr-2" />
-                  Reserve
-                </Button>
-
-                <p className="text-sm text-gray-500 text-center mt-3">
-                  You won't be charged yet
-                </p>
-
-                {/* Trust Badges */}
-                <div className="mt-6 pt-6 border-t space-y-3">
-                  <div className="flex items-center gap-3 text-sm text-gray-700">
-                    <Shield className="h-5 w-5 text-success" />
-                    <span>Secure payment</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-success" />
-                    <span>Instant confirm</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            </div>
           </div>
         </div>
       </div>
