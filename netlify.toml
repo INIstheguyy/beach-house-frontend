@@ -1,0 +1,23 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Proxy API requests to the Railway backend
+[[redirects]]
+  from = "/api/*"
+  to = "https://your-backend.up.railway.app/api/:splat"
+  status = 200
+  force = true
+
+# Proxy uploaded images/files to the Railway backend
+[[redirects]]
+  from = "/uploads/*"
+  to = "https://your-backend.up.railway.app/uploads/:splat"
+  status = 200
+  force = true
+
+# SPA catch-all — must be LAST (serves index.html for all client-side routes)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
