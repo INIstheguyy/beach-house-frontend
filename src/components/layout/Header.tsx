@@ -1,19 +1,9 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home as HomeIcon, Search, Info, MapPin } from "lucide-react";
 
 const Header = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-
-  // Navigation items with icons for mobile and labels for desktop
-  const navItems = [
-    { label: "About us", path: "/", icon: HomeIcon },
-    { label: "Apartments", path: "/properties", icon: Search },
-
-    { label: "Contact", path: "/about", icon: Info },
-  ];
 
   return (
     <div className="fixed top-6 left-0 right-0 z-50 px-4 pointer-events-none max-w-3xl mx-auto">
@@ -76,15 +66,21 @@ const Header = () => {
 
         {/* CTA Buttons - Desktop Only */}
         <div className="flex-1 hidden md:flex items-center justify-end">
-          <Button onClick={() => navigate("/properties")} className="bg-accent hover:bg-accent-700 text-white rounded-full px-6 py-2 text-xs font-bold shadow-lg shadow-accent/20 transition-all transform hover:scale-105">
-           Book a Property
+          <Button
+            onClick={() => navigate("/properties")}
+            className="bg-accent hover:bg-accent-700 text-white rounded-full px-6 py-2 text-xs font-bold shadow-lg shadow-accent/20 transition-all transform hover:scale-105"
+          >
+            Book a Property
           </Button>
         </div>
 
         {/* Mobile Host Button - Visible only on mobile */}
         <div className="md:hidden flex-1 flex justify-end">
-          <Button onClick={() => navigate("/properties")} className="bg-accent hover:bg-accent-700 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md transition-all">
-             Book a Property
+          <Button
+            onClick={() => navigate("/properties")}
+            className="bg-accent hover:bg-accent-700 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md transition-all"
+          >
+            Book a Property
           </Button>
         </div>
       </header>
