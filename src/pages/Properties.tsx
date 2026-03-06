@@ -147,7 +147,7 @@ const Properties = () => {
         </div>
 
         {/* Mobile Sort - Compact */}
-        <div className="mb-6 flex md:hidden justify-end">
+        {/* <div className="mb-6 flex md:hidden justify-end">
           <Select defaultValue="recommended">
             <SelectTrigger className="w-40">
               <SelectValue />
@@ -159,7 +159,7 @@ const Properties = () => {
               <SelectItem value="rating">Highest Rated</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
 
         {/* Properties Display */}
         {loading ? (

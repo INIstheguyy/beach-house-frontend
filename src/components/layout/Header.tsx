@@ -1,10 +1,6 @@
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Link, NavLink } from "react-router-dom";
 
 const Header = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="fixed top-6 left-0 right-0 z-50 px-4 pointer-events-none max-w-3xl mx-auto">
       <header
@@ -21,12 +17,12 @@ const Header = () => {
         <div className="flex-1 flex justify-start">
           <Link to="/" className="flex items-center gap-2 group">
             {/* Mobile Logo: "LE" */}
-            <span className={`md:hidden text-2xl font-black tracking-tighter`}>
+            <span className={`md:hidden text-3xl font-cookie tracking-tighter`}>
               LE
             </span>
             {/* Desktop Logo: "Luxury Exxentials" */}
             <span
-              className={`hidden md:block text-lg font-extrabold tracking-tight whitespace-nowrap`}
+              className={`hidden md:block text-3xl font-cookie tracking-tight whitespace-nowrap`}
             >
               Luxury Exxentials
             </span>
@@ -66,22 +62,22 @@ const Header = () => {
 
         {/* CTA Buttons - Desktop Only */}
         <div className="flex-1 hidden md:flex items-center justify-end">
-          <Button
-            onClick={() => navigate("/properties")}
-            className="bg-accent hover:bg-accent-700 text-white rounded-full px-6 py-2 text-xs font-bold shadow-lg shadow-accent/20 transition-all transform hover:scale-105"
+          <NavLink
+            to="/properties"
+            className="flex items-center justify-center bg-accent hover:bg-accent-700 text-white rounded-full px-6 py-2 text-xl font-grenze font-bold shadow-lg shadow-accent/20 transition-all transform hover:scale-105"
           >
-            Book a Property
-          </Button>
+            Reserve
+          </NavLink>
         </div>
 
         {/* Mobile Host Button - Visible only on mobile */}
         <div className="md:hidden flex-1 flex justify-end">
-          <Button
-            onClick={() => navigate("/properties")}
-            className="bg-accent hover:bg-accent-700 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md transition-all"
+          <NavLink
+            to="/properties"
+            className="flex items-center justify-center bg-accent hover:bg-accent-700 text-white rounded-full px-4 py-2 text-lg font-grenze font-bold shadow-md transition-all"
           >
-            Book a Property
-          </Button>
+            Reserve
+          </NavLink>
         </div>
       </header>
     </div>

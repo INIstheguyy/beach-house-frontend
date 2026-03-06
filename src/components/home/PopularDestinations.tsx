@@ -13,21 +13,24 @@ const destinations = [
     id: 2,
     name: "Lekki Phase 1",
     description: "Modern apartments with ocean views in the heart of Lagos",
-    image: "https://images.pexels.com/photos/32656347/pexels-photo-32656347.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    image:
+      "https://images.pexels.com/photos/32656347/pexels-photo-32656347.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     count: "28 Properties",
   },
   {
     id: 3,
     name: "Victoria Island",
     description: "Premium high-rise living near business districts",
-    image: "https://images.unsplash.com/photo-1618828665011-0abd973f7bb8?crop=entropy&cs=srgb&fm=jpg&q=85&w=1260&h=750",
+    image:
+      "https://images.unsplash.com/photo-1618828665011-0abd973f7bb8?crop=entropy&cs=srgb&fm=jpg&q=85&w=1260&h=750",
     count: "15 Properties",
   },
   {
     id: 4,
     name: "Eko Atlantic",
     description: "The new coastal city of Lagos with world-class amenities",
-    image: "https://images.pexels.com/photos/27857468/pexels-photo-27857468.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    image:
+      "https://images.pexels.com/photos/27857468/pexels-photo-27857468.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     count: "8 Properties",
   },
 ];

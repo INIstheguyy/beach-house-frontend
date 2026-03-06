@@ -131,6 +131,9 @@ export default {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
         heading: ["Poppins", "sans-serif"],
+        cookie: ["Cookie", "cursive"],
+        crimson: ["'Crimson Pro'", "serif"],
+        grenze: ["'Grenze Gotisch'", "serif"],
       },
     },
   },
