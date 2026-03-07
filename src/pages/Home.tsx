@@ -8,6 +8,7 @@ import { ArrowRight } from "lucide-react";
 import PropertyCard from "@/components/property/PropertyCard";
 import PopularDestinations from "@/components/home/PopularDestinations";
 import LocalExperience from "@/components/home/LocalExperience";
+import AnimatedAmenities from "@/components/home/AnimatedAmenities";
 
 const Home = () => {
   const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
@@ -154,7 +155,10 @@ const Home = () => {
               {/* Mobile/Tablet Loading Skeleton */}
               <div className="lg:hidden -mx-4 px-4 overflow-x-auto pb-8 snap-x snap-mandatory flex gap-4 scrollbar-hide">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <Card key={i} className="snap-center shrink-0 w-[85vw] md:w-[70vw] overflow-hidden">
+                  <Card
+                    key={i}
+                    className="snap-center shrink-0 w-[85vw] md:w-[70vw] overflow-hidden"
+                  >
                     <div className="h-64 bg-gray-200 animate-pulse"></div>
                     <CardContent className="p-6">
                       <div className="h-6 bg-gray-200 rounded animate-pulse mb-3"></div>
@@ -200,8 +204,9 @@ const Home = () => {
         </div>
       </section>
 
-   
-     
+      {/* Animated Amenities Section */}
+      <AnimatedAmenities />
+
       <section className="py-20 bg-gradient-to-r from-accent via-accent-600 to-accent-700 text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
