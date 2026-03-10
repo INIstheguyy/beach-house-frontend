@@ -340,7 +340,7 @@ const AnimatedAmenities = () => {
       <div className="container mx-auto px-4">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl md:text-5xl font-bold text-primary mb-6">
-            Get the amenities you want
+           amenities we provide
           </h2>
           <p className="text-gray-600 text-lg">
             The little details make all the difference—explore our top-tier

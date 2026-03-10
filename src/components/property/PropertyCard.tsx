@@ -1,9 +1,7 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Users, Bed, Bath, Heart, Star } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { formatPrice } from "@/utils/priceHelpers";
 import type { Property } from "@/types";
 
@@ -12,111 +10,67 @@ interface PropertyCardProps {
 }
 
 const PropertyCard = ({ property }: PropertyCardProps) => {
-  const [isFavorite, setIsFavorite] = useState(false);
-
   const imageUrl = property.featuredPhoto?.url || property.photos?.[0]?.url;
   const fullImageUrl = imageUrl
     ? `${import.meta.env.VITE_STRAPI_URL || ""}${imageUrl}`
     : "https://via.placeholder.com/400x300?text=No+Image";
 
-  // Random rating for demonstration (you can replace with actual rating from data)
-  const rating = (4.5 + Math.random() * 0.5).toFixed(1);
-  const reviewCount = Math.floor(50 + Math.random() * 100);
-
   return (
-    <Link to={`/properties/${property.documentId}`}>
-      <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group h-full border-0 shadow-md">
-        {/* Image */}
-        <div className="relative h-64 overflow-hidden">
+    <Link
+      to={`/properties/${property.documentId}`}
+      className="block h-full outline-none focus:ring-2 focus:ring-primary rounded-2xl"
+    >
+      <Card className="relative overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer group h-[380px] sm:h-[420px] border-0 rounded-2xl">
+        {/* Background Image */}
+        <div className="absolute inset-0">
           <img
             src={fullImageUrl}
             alt={property.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
           />
-
-          {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {Math.random() > 0.7 && (
-              <Badge variant="superhost" className="text-xs">
-                SUPERHOST
-              </Badge>
-            )}
-            {Math.random() > 0.8 && (
-              <Badge variant="rare-find" className="text-xs">
-                RARE FIND
-              </Badge>
-            )}
-          </div>
-
-          {/* Favorite Icon */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setIsFavorite(!isFavorite);
-            }}
-            className="absolute top-3 right-3 p-2 rounded-full bg-white/90 hover:bg-white transition-colors"
-          >
-            <Heart
-              className={`h-5 w-5 transition-colors ${
-                isFavorite ? "fill-red-500 text-red-500" : "text-gray-700"
-              }`}
-            />
-          </button>
+          {/* Gradient overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500"></div>
         </div>
 
-        {/* Content */}
-        <CardContent className="p-5">
-          {/* Location and Rating */}
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center text-gray-600">
-              <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-              <span className="text-sm font-medium truncate">
-                {property.location}
-              </span>
+        {/* Content (Bottom blurred section) */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <div className="backdrop-blur-md bg-white/10 p-3 sm:p-4 transform translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
+            <div className="flex flex-col gap-1 mb-2">
+              <h3 className="text-base sm:text-lg font-bold text-white line-clamp-1 drop-shadow-md">
+                {property.title}
+              </h3>
+              <div className="flex items-center text-white/95">
+                <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 flex-shrink-0" />
+                <span className="text-[11px] sm:text-xs font-medium truncate drop-shadow-md">
+                  {property.location}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-1 flex-shrink-0">
-              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-semibold">{rating}</span>
-              <span className="text-xs text-gray-500">({reviewCount})</span>
+
+            <div className="flex items-end justify-between mt-1 pt-2 sm:pt-2.5 border-t border-white/20">
+              <div className="flex flex-col">
+                <span className="text-white/80 text-[10px] font-semibold uppercase tracking-wider mb-0.5">
+                  Prices from
+                </span>
+                <div className="flex items-baseline text-white drop-shadow-md">
+                  <span className="text-sm sm:text-base font-bold">
+                    {formatPrice(property.pricePerNight)}
+                  </span>
+                  <span className="text-[10px] sm:text-xs ml-1 opacity-90 font-medium">
+                    / night
+                  </span>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-transparent border-white/40 text-white hover:bg-white hover:text-black transition-colors rounded-full px-4 text-[11px] sm:text-xs font-semibold h-7 sm:h-8"
+              >
+                View
+              </Button>
             </div>
           </div>
-
-          <h3 className="text-lg font-semibold mb-3 text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
-            {property.title}
-          </h3>
-
-          {/* Property Details */}
-          <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-            <div className="flex items-center">
-              <Bed className="h-4 w-4 mr-1 text-gray-500" />
-              <span>{property.bedrooms}</span>
-            </div>
-            <div className="flex items-center">
-              <Bath className="h-4 w-4 mr-1 text-gray-500" />
-              <span>{property.bathrooms}</span>
-            </div>
-            <div className="flex items-center">
-              <Users className="h-4 w-4 mr-1 text-gray-500" />
-              <span>{property.maxGuests}</span>
-            </div>
-          </div>
-
-          {/* Price */}
-          <div className="flex items-center justify-between pt-3 border-t">
-            <div>
-              <span className="text-2xl font-bold text-accent-500">
-                {formatPrice(property.pricePerNight)}
-              </span>
-              <span className="text-gray-600 text-sm ml-1">/night</span>
-            </div>
-            <Button
-              size="sm"
-              className="bg-accent hover:bg-accent-600 text-white"
-            >
-              View Details
-            </Button>
-          </div>
-        </CardContent>
+        </div>
       </Card>
     </Link>
   );
