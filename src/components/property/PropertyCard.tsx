@@ -12,7 +12,9 @@ interface PropertyCardProps {
 const PropertyCard = ({ property }: PropertyCardProps) => {
   const imageUrl = property.featuredPhoto?.url || property.photos?.[0]?.url;
   const fullImageUrl = imageUrl
-    ? `${import.meta.env.VITE_STRAPI_URL || ""}${imageUrl}`
+    ? imageUrl.startsWith("http")
+      ? imageUrl
+      : `${import.meta.env.VITE_STRAPI_URL || ""}${imageUrl}`
     : "https://via.placeholder.com/400x300?text=No+Image";
 
   return (

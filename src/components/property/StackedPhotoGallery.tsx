@@ -14,7 +14,10 @@ interface StackedPhotoGalleryProps {
   baseUrl?: string;
 }
 
-const StackedPhotoGallery = ({ photos, baseUrl = "" }: StackedPhotoGalleryProps) => {
+const StackedPhotoGallery = ({
+  photos,
+  baseUrl = "",
+}: StackedPhotoGalleryProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -39,9 +42,9 @@ const StackedPhotoGallery = ({ photos, baseUrl = "" }: StackedPhotoGalleryProps)
 
   const handleCardClick = () => {
     if (isAnimating) return;
-    
+
     setIsAnimating(true);
-    
+
     // Update index after animation completes
     setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % photos.length);
@@ -52,17 +55,20 @@ const StackedPhotoGallery = ({ photos, baseUrl = "" }: StackedPhotoGalleryProps)
   const orderedPhotos = getOrderedPhotos();
 
   return (
-    <div className="relative w-full aspect-[4/3] cursor-pointer select-none" onClick={handleCardClick}>
+    <div
+      className="relative w-full aspect-[4/3] cursor-pointer select-none"
+      onClick={handleCardClick}
+    >
       <div className="relative w-full h-full">
         {orderedPhotos.map((photo, idx) => {
           const position = photo.position;
           const isTop = position === 0;
-          
+
           return (
             <div
               key={`${photo.id}-${idx}`}
               className={`absolute inset-0 transition-all duration-400 ease-out ${
-                isTop && isAnimating ? 'animate-card-flip' : ''
+                isTop && isAnimating ? "animate-card-flip" : ""
               }`}
               style={{
                 transform: `
@@ -77,7 +83,11 @@ const StackedPhotoGallery = ({ photos, baseUrl = "" }: StackedPhotoGalleryProps)
             >
               <div className="w-full h-full rounded-xl overflow-hidden shadow-xl bg-white">
                 <img
-                  src={`${baseUrl}${photo.url}`}
+                  src={
+                    photo.url.startsWith("http")
+                      ? photo.url
+                      : `${baseUrl}${photo.url}`
+                  }
                   alt={photo.alternativeText || photo.name}
                   className="w-full h-full object-cover"
                   draggable={false}
@@ -87,7 +97,7 @@ const StackedPhotoGallery = ({ photos, baseUrl = "" }: StackedPhotoGalleryProps)
           );
         })}
       </div>
-      
+
       {/* Click indicator */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
         Click to view next • {currentIndex + 1} / {photos.length}

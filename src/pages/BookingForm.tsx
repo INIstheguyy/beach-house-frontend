@@ -384,7 +384,9 @@ const BookingForm = () => {
                     <img
                       src={
                         property.featuredPhoto?.url
-                          ? `${import.meta.env.VITE_STRAPI_URL || ""}${property.featuredPhoto.url}`
+                          ? property.featuredPhoto.url.startsWith("http")
+                            ? property.featuredPhoto.url
+                            : `${import.meta.env.VITE_STRAPI_URL || ""}${property.featuredPhoto.url}`
                           : "https://picsum.photos/400/300"
                       }
                       alt={property.title}

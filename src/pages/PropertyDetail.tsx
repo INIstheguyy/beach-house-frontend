@@ -141,7 +141,9 @@ const PropertyDetail = () => {
   const attr = property;
   const imageUrl = attr.featuredPhoto?.url || attr.photos?.[0]?.url;
   const fullImageUrl = imageUrl
-    ? `${import.meta.env.VITE_STRAPI_URL || ""}${imageUrl}`
+    ? imageUrl.startsWith("http")
+      ? imageUrl
+      : `${import.meta.env.VITE_STRAPI_URL || ""}${imageUrl}`
     : "https://via.placeholder.com/800x600?text=No+Image";
 
   // Prepare all photos for stacked gallery
@@ -257,7 +259,6 @@ const PropertyDetail = () => {
                     <MapPin className="h-5 w-5" />
                     <span>{attr.location}</span>
                   </div>
-                
                 </div>
               </div>
 
@@ -267,21 +268,27 @@ const PropertyDetail = () => {
                   <Bed className="h-5 w-5 text-primary flex-shrink-0" />
                   <div>
                     <p className="text-xs text-gray-600">Bedrooms</p>
-                    <span className="font-semibold text-gray-900">{attr.bedrooms}</span>
+                    <span className="font-semibold text-gray-900">
+                      {attr.bedrooms}
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Bath className="h-5 w-5 text-primary flex-shrink-0" />
                   <div>
                     <p className="text-xs text-gray-600">Bathrooms</p>
-                    <span className="font-semibold text-gray-900">{attr.bathrooms}</span>
+                    <span className="font-semibold text-gray-900">
+                      {attr.bathrooms}
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5 text-primary flex-shrink-0" />
                   <div>
                     <p className="text-xs text-gray-600">Max Guests</p>
-                    <span className="font-semibold text-gray-900">{attr.maxGuests}</span>
+                    <span className="font-semibold text-gray-900">
+                      {attr.maxGuests}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -289,7 +296,9 @@ const PropertyDetail = () => {
               {/* Description */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg md:text-xl">About this property</CardTitle>
+                  <CardTitle className="text-lg md:text-xl">
+                    About this property
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div
@@ -303,7 +312,9 @@ const PropertyDetail = () => {
               {attr.amenities && attr.amenities.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg md:text-xl">Amenities</CardTitle>
+                    <CardTitle className="text-lg md:text-xl">
+                      Amenities
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
