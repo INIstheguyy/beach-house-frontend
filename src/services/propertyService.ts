@@ -14,6 +14,15 @@ export const propertyService = {
     if (filters.propertyType) {
       params.append("filters[propertyType][$eq]", filters.propertyType);
     }
+    if (filters.location) {
+      params.append("filters[location][$eq]", filters.location);
+    }
+    if (filters.minPrice) {
+      params.append(
+        "filters[pricePerNight][$gte]",
+        filters.minPrice.toString(),
+      );
+    }
     if (filters.maxPrice) {
       params.append(
         "filters[pricePerNight][$lte]",
@@ -22,6 +31,9 @@ export const propertyService = {
     }
     if (filters.minBedrooms) {
       params.append("filters[bedrooms][$gte]", filters.minBedrooms.toString());
+    }
+    if (filters.maxBedrooms) {
+      params.append("filters[bedrooms][$lte]", filters.maxBedrooms.toString());
     }
 
     params.append("populate", "*");

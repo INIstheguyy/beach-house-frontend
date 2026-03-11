@@ -134,7 +134,7 @@ export interface AvailabilityResponse {
 }
 
 export interface BookingInitializeRequest {
-  propertyId: string;  // Changed to string (documentId)
+  propertyId: string; // Changed to string (documentId)
   checkIn: string;
   checkOut: string;
   guestDetails: {
@@ -161,6 +161,9 @@ export interface BookingVerifyResponse {
 // Filter types
 export interface PropertyFilters {
   propertyType?: "Beach House" | "Apartment" | "Villa";
+  minPrice?: number;
   maxPrice?: number;
   minBedrooms?: number;
+  maxBedrooms?: number;
+  location?: string;
 }

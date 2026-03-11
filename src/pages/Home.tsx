@@ -214,9 +214,9 @@ const Home = () => {
           </h2>
           <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
             partner with us to maximize your rental income while we handle the
-            details. let's turn your property to a top-earning gateway!ddd
+            details. let's turn your property to a top-earning gateway!
           </p>
-          <Link to="/properties">
+          <Link to="/">
             <Button
               size="lg"
               className="bg-white text-accent hover:bg-gray-100 px-8 py-6 text-lg font-semibold"

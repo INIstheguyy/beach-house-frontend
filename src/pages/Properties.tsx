@@ -23,11 +23,18 @@ const Properties = () => {
 
   const [filters, setFilters] = useState<PropertyFilters>({
     propertyType: (searchParams.get("type") as any) || undefined,
+    location: searchParams.get("location") || undefined,
+    minPrice: searchParams.get("minPrice")
+      ? Number(searchParams.get("minPrice"))
+      : undefined,
     maxPrice: searchParams.get("maxPrice")
       ? Number(searchParams.get("maxPrice"))
       : undefined,
     minBedrooms: searchParams.get("minBedrooms")
       ? Number(searchParams.get("minBedrooms"))
+      : undefined,
+    maxBedrooms: searchParams.get("maxBedrooms")
+      ? Number(searchParams.get("maxBedrooms"))
       : undefined,
   });
 
@@ -93,10 +100,16 @@ const Properties = () => {
     // Update URL params
     const params = new URLSearchParams();
     if (newFilters.propertyType) params.set("type", newFilters.propertyType);
+    if (newFilters.location) params.set("location", newFilters.location);
+    if (newFilters.minPrice)
+      params.set("minPrice", newFilters.minPrice.toString());
     if (newFilters.maxPrice)
       params.set("maxPrice", newFilters.maxPrice.toString());
     if (newFilters.minBedrooms)
       params.set("minBedrooms", newFilters.minBedrooms.toString());
+    if (newFilters.maxBedrooms)
+      params.set("maxBedrooms", newFilters.maxBedrooms.toString());
+
     setSearchParams(params);
   };
 
@@ -106,7 +119,12 @@ const Properties = () => {
   };
 
   const hasActiveFilters =
-    filters.propertyType || filters.maxPrice || filters.minBedrooms;
+    filters.propertyType ||
+    filters.location ||
+    filters.minPrice ||
+    filters.maxPrice ||
+    filters.minBedrooms ||
+    filters.maxBedrooms;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -114,7 +132,7 @@ const Properties = () => {
       <FilterHero
         filters={filters}
         onFilterChange={handleFilterChange}
-        onSearch={loadProperties}
+        onClearFilters={clearFilters}
       />
 
       {/* Main Content */}
@@ -123,11 +141,11 @@ const Properties = () => {
         <div className="mb-8 md:mb-12 hidden md:flex flex-row justify-between items-start md:items-end gap-4">
           <div>
             <h2 className="text-3xl md:text-5xl   font-bold text-primary mb-4 font-heading">
-               Recommendations for you
+              Recommendations for you
             </h2>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600 hidden sm:block">
                 Sort by:
               </span>
@@ -142,7 +160,7 @@ const Properties = () => {
                   <SelectItem value="rating">Highest Rated</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
           </div>
         </div>
 

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -10,16 +9,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import type { PropertyFilters } from "@/types";
 
 interface FilterHeroProps {
   filters: PropertyFilters;
   onFilterChange: (key: keyof PropertyFilters, value: any) => void;
-  onSearch?: () => void;
+  onClearFilters?: () => void;
 }
 
-const FilterHero = ({ filters, onFilterChange, onSearch }: FilterHeroProps) => {
+const FilterHero = ({
+  filters,
+  onFilterChange,
+  onClearFilters,
+}: FilterHeroProps) => {
   const [expandedMobile, setExpandedMobile] = useState(false);
 
   return (
@@ -37,7 +40,7 @@ const FilterHero = ({ filters, onFilterChange, onSearch }: FilterHeroProps) => {
         </div>
 
         {/* Desktop/Tablet Content */}
-        <div className="relative z-10 pt-12 pb-32 md:pb-40 hidden md:block">
+        <div className="relative z-10 pt-12 pb-32 md:pb-56 hidden md:block">
           <div className="container mx-auto px-4">
             <h1 className="text-4xl lg:text-5xl font-bold text-white mb-2">
               Properties
@@ -54,144 +57,149 @@ const FilterHero = ({ filters, onFilterChange, onSearch }: FilterHeroProps) => {
       </div>
 
       {/* Filter Card positioned at baseline - Desktop/Tablet */}
-      <div className="hidden md:block relative -mt-20 z-20">
-        <div className="w-full px-4">
+      <div className="hidden md:block relative -mt-32 z-20">
+        <div className="w-full px-4 max-w-5xl mx-auto">
           <Card className="w-full bg-white/95 backdrop-blur-sm border-0 shadow-2xl rounded-2xl overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between gap-6">
-                {/* Left side - Filter inputs in a row */}
-                <div className="flex-1 grid grid-cols-4 gap-4">
-                  {/* Looking for */}
-                  <div>
-                    <label className="text-sm font-semibold text-gray-700 mb-2 block">
-                      Looking for
-                    </label>
-                    <Input
-                      placeholder="Enter Type"
-                      className="w-full bg-gray-50"
-                    />
-                  </div>
+            <CardContent className="p-5">
+              <div className="flex flex-col gap-6">
+                {/* Row 1: Centered Tabs and Clear Button */}
+                <div className="flex justify-center items-center">
+                  <div className="flex items-center gap-8 border rounded-full px-6 py-2 bg-white/50 shadow-sm">
+                    {/* Left side: Tabs */}
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-semibold text-gray-700">
+                        Filter:
+                      </span>
+                      <Tabs
+                        value={filters.propertyType || "all"}
+                        onValueChange={(value) =>
+                          onFilterChange(
+                            "propertyType",
+                            value === "all" ? undefined : value,
+                          )
+                        }
+                      >
+                        <TabsList className="bg-transparent gap-2 p-0 h-auto">
+                          <TabsTrigger
+                            value="all"
+                            className="data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 hover:bg-gray-100 rounded-full px-5 py-1.5 text-sm font-medium transition-all"
+                          >
+                            All
+                          </TabsTrigger>
+                          <TabsTrigger
+                            value="Beach House"
+                            className="data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 hover:bg-gray-100 rounded-full px-5 py-1.5 text-sm font-medium transition-all"
+                          >
+                            Beach House
+                          </TabsTrigger>
+                          <TabsTrigger
+                            value="Apartment"
+                            className="data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-700 hover:bg-gray-100 rounded-full px-5 py-1.5 text-sm font-medium transition-all"
+                          >
+                            Apartment
+                          </TabsTrigger>
+                        </TabsList>
+                      </Tabs>
+                    </div>
 
-                  {/* Price */}
-                  <div>
-                    <label className="text-sm font-semibold text-gray-700 mb-2 block">
-                      Price
-                    </label>
-                    <Select
-                      value={filters.maxPrice?.toString() || ""}
-                      onValueChange={(value) =>
-                        onFilterChange(
-                          "maxPrice",
-                          value ? Number(value) : undefined,
-                        )
-                      }
-                    >
-                      <SelectTrigger className="bg-gray-50">
-                        <SelectValue placeholder="Price" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Any Price</SelectItem>
-                        <SelectItem value="30000">₦30,000</SelectItem>
-                        <SelectItem value="50000">₦50,000</SelectItem>
-                        <SelectItem value="75000">₦75,000</SelectItem>
-                        <SelectItem value="100000">₦100,000</SelectItem>
-                        <SelectItem value="150000">₦150,000</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    {/* Right side: Clear Button */}
+                    {onClearFilters && (
+                      <div className="border-l pl-8">
+                        <Button
+                          variant="ghost"
+                          onClick={onClearFilters}
+                          className="h-8 px-4 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full"
+                        >
+                          Clear all
+                        </Button>
+                      </div>
+                    )}
                   </div>
+                </div>
 
-                  {/* Location */}
+                {/* Row 2: 3-Column Grid */}
+                <div className="w-full grid grid-cols-3 gap-6">
+                  {/* Location Dropdown */}
                   <div>
-                    <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                    <label className="text-sm font-semibold text-gray-700 mb-1.5 block">
                       Location
                     </label>
-                    <Input
-                      placeholder="Location"
-                      className="w-full bg-gray-50"
-                    />
-                  </div>
-
-                  {/* Number of Rooms */}
-                  <div>
-                    <label className="text-sm font-semibold text-gray-700 mb-2 block">
-                      Number of Rooms
-                    </label>
                     <Select
-                      value={filters.minBedrooms?.toString() || ""}
+                      value={filters.location || "all"}
                       onValueChange={(value) =>
                         onFilterChange(
-                          "minBedrooms",
-                          value ? Number(value) : undefined,
+                          "location",
+                          value === "all" ? undefined : value,
                         )
                       }
                     >
-                      <SelectTrigger className="bg-gray-50">
-                        <SelectValue placeholder="2 Bed Rooms" />
+                      <SelectTrigger className="bg-gray-50 h-11 border-0 focus:ring-0 shadow-none">
+                        <SelectValue placeholder="Any Location" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">Any</SelectItem>
-                        <SelectItem value="1">1+ Bedroom</SelectItem>
-                        <SelectItem value="2">2+ Bedrooms</SelectItem>
-                        <SelectItem value="3">3+ Bedrooms</SelectItem>
-                        <SelectItem value="4">4+ Bedrooms</SelectItem>
+                        <SelectItem value="all">Any Location</SelectItem>
+                        <SelectItem value="lekki">Lekki</SelectItem>
+                        <SelectItem value="ilashe">Ilashe</SelectItem>
+                        <SelectItem value="ibeshe">Ibeshe</SelectItem>
+                        <SelectItem value="vi">VI</SelectItem>
+                        <SelectItem value="eko atlantic">
+                          Eko Atlantic
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
 
-                {/* Right side - Search Button */}
-                <div className="flex-shrink-0">
-                  <Button
-                    className="bg-accent hover:bg-accent-600 text-white px-8 h-11 whitespace-nowrap"
-                    onClick={onSearch}
-                  >
-                    <Search className="h-4 w-4 mr-2" />
-                    Search Properties
-                  </Button>
-                </div>
-              </div>
+                  {/* Number of Rooms Range */}
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-1.5 block">
+                      Minimum Bedrooms: {filters.minBedrooms || 1}
+                    </label>
+                    <div className="pt-2">
+                      <input
+                        type="range"
+                        min="1"
+                        max="10"
+                        step="1"
+                        value={filters.minBedrooms || 1}
+                        onChange={(e) =>
+                          onFilterChange("minBedrooms", Number(e.target.value))
+                        }
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                      />
+                      <div className="flex justify-between text-xs text-gray-500 mt-2">
+                        <span>1</span>
+                        <span>10+</span>
+                      </div>
+                    </div>
+                  </div>
 
-              {/* Filter tags row */}
-              <div className="mt-4 pt-4 border-t flex items-center gap-3">
-                <span className="text-sm font-semibold text-gray-700">
-                  Filter:
-                </span>
-                <Tabs
-                  value={filters.propertyType || "all"}
-                  onValueChange={(value) =>
-                    onFilterChange(
-                      "propertyType",
-                      value === "all" ? undefined : value,
-                    )
-                  }
-                >
-                  <TabsList className="bg-transparent gap-2 p-0 h-auto">
-                    <TabsTrigger
-                      value="all"
-                      className="data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-700 hover:bg-gray-200 rounded-full px-5 py-1.5 text-sm font-medium transition-all"
-                    >
-                      City
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="Beach House"
-                      className="data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-700 hover:bg-gray-200 rounded-full px-5 py-1.5 text-sm font-medium transition-all"
-                    >
-                      House
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="Apartment"
-                      className="data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-700 hover:bg-gray-200 rounded-full px-5 py-1.5 text-sm font-medium transition-all"
-                    >
-                      Apartment
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="Villa"
-                      className="data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-gray-100 data-[state=inactive]:text-gray-700 hover:bg-gray-200 rounded-full px-5 py-1.5 text-sm font-medium transition-all"
-                    >
-                      Residential
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                  {/* Price Range */}
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-1.5 block">
+                      Max Price (Per Night):{" "}
+                      {filters.maxPrice
+                        ? `₦${filters.maxPrice.toLocaleString()}`
+                        : "₦500,000"}
+                    </label>
+                    <div className="pt-2">
+                      <input
+                        type="range"
+                        min="10000"
+                        max="500000"
+                        step="10000"
+                        value={filters.maxPrice || 500000}
+                        onChange={(e) =>
+                          onFilterChange("maxPrice", Number(e.target.value))
+                        }
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                      />
+                      <div className="flex justify-between text-xs text-gray-500 mt-2">
+                        <span>₦10,000</span>
+                        <span>₦500,000+</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -258,84 +266,104 @@ const FilterHero = ({ filters, onFilterChange, onSearch }: FilterHeroProps) => {
             {/* Expandable Filter Options - Drawer effect */}
             <div
               className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                expandedMobile ? "max-h-96 opacity-100 mt-3" : "max-h-0 opacity-0"
+                expandedMobile
+                  ? "max-h-96 opacity-100 mt-3"
+                  : "max-h-0 opacity-0"
               }`}
             >
-              <div className="space-y-3 pt-3 border-t">
-                {/* Price */}
+              <div className="space-y-4 pt-4 border-t">
+                {/* Location Dropdown */}
                 <div>
-                  <label className="text-sm font-semibold text-gray-700 mb-2 block">
-                    Max Price
-                  </label>
-                  <Select
-                    value={filters.maxPrice?.toString() || ""}
-                    onValueChange={(value) =>
-                      onFilterChange(
-                        "maxPrice",
-                        value ? Number(value) : undefined,
-                      )
-                    }
-                  >
-                    <SelectTrigger className="bg-gray-50">
-                      <SelectValue placeholder="Any Price" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Any Price</SelectItem>
-                      <SelectItem value="30000">₦30,000</SelectItem>
-                      <SelectItem value="50000">₦50,000</SelectItem>
-                      <SelectItem value="75000">₦75,000</SelectItem>
-                      <SelectItem value="100000">₦100,000</SelectItem>
-                      <SelectItem value="150000">₦150,000</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Bedrooms */}
-                <div>
-                  <label className="text-sm font-semibold text-gray-700 mb-2 block">
-                    Bedrooms
-                  </label>
-                  <Select
-                    value={filters.minBedrooms?.toString() || ""}
-                    onValueChange={(value) =>
-                      onFilterChange(
-                        "minBedrooms",
-                        value ? Number(value) : undefined,
-                      )
-                    }
-                  >
-                    <SelectTrigger className="bg-gray-50">
-                      <SelectValue placeholder="Any" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Any</SelectItem>
-                      <SelectItem value="1">1+ Bedroom</SelectItem>
-                      <SelectItem value="2">2+ Bedrooms</SelectItem>
-                      <SelectItem value="3">3+ Bedrooms</SelectItem>
-                      <SelectItem value="4">4+ Bedrooms</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Location */}
-                <div>
-                  <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                  <label className="text-sm font-semibold text-gray-700 mb-1.5 block">
                     Location
                   </label>
-                  <Input
-                    placeholder="Enter location"
-                    className="w-full bg-gray-50"
-                  />
+                  <Select
+                    value={filters.location || "all"}
+                    onValueChange={(value) =>
+                      onFilterChange(
+                        "location",
+                        value === "all" ? undefined : value,
+                      )
+                    }
+                  >
+                    <SelectTrigger className="bg-gray-50 w-full border-0 focus:ring-0 shadow-none">
+                      <SelectValue placeholder="Any Location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Any Location</SelectItem>
+                      <SelectItem value="lekki">Lekki</SelectItem>
+                      <SelectItem value="ilashe">Ilashe</SelectItem>
+                      <SelectItem value="ibeshe">Ibeshe</SelectItem>
+                      <SelectItem value="vi">VI</SelectItem>
+                      <SelectItem value="eko atlantic">Eko Atlantic</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                {/* Search Button */}
-                <Button
-                  className="w-full bg-accent hover:bg-accent-600 text-white"
-                  onClick={onSearch}
-                >
-                  <Search className="h-4 w-4 mr-2" />
-                  Search Properties
-                </Button>
+                {/* Price Range */}
+                <div>
+                  <label className="text-sm font-semibold text-gray-700 mb-1.5 block">
+                    Max Price: ₦
+                    {filters.maxPrice
+                      ? filters.maxPrice.toLocaleString()
+                      : "500,000"}
+                  </label>
+                  <div className="pt-2">
+                    <input
+                      type="range"
+                      min="10000"
+                      max="500000"
+                      step="10000"
+                      value={filters.maxPrice || 500000}
+                      onChange={(e) =>
+                        onFilterChange("maxPrice", Number(e.target.value))
+                      }
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 mt-2">
+                      <span>₦10,000</span>
+                      <span>₦500,000+</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bedrooms Range */}
+                <div>
+                  <label className="text-sm font-semibold text-gray-700 mb-1.5 block">
+                    Minimum Bedrooms: {filters.minBedrooms || 1}
+                  </label>
+                  <div className="pt-2">
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      step="1"
+                      value={filters.minBedrooms || 1}
+                      onChange={(e) =>
+                        onFilterChange("minBedrooms", Number(e.target.value))
+                      }
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 mt-2">
+                      <span>1</span>
+                      <span>10+</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Clear Button */}
+                {onClearFilters && (
+                  <Button
+                    variant="outline"
+                    className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                    onClick={() => {
+                      onClearFilters();
+                      setExpandedMobile(false);
+                    }}
+                  >
+                    Clear All Filters
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>
