@@ -1,7 +1,7 @@
 import { useEffect, useState, type SetStateAction } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { propertyService } from "@/services/propertyService";
 import { formatPrice } from "@/utils/priceHelpers";
@@ -36,6 +36,7 @@ const PropertyDetail = () => {
     null,
   );
   const [checkingAvailability, setCheckingAvailability] = useState(false);
+  const [featuredImageUrl, setFeaturedImageUrl] = useState<string>("");
 
   useEffect(() => {
     if (documentId) {
@@ -86,6 +87,18 @@ const PropertyDetail = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkIn, checkOut, property]);
+
+  // Sync featured image URL when property loads
+  useEffect(() => {
+    if (!property) return;
+    const imgUrl = property.featuredPhoto?.url || property.photos?.[0]?.url;
+    const resolved = imgUrl
+      ? imgUrl.startsWith("http")
+        ? imgUrl
+        : `${import.meta.env.VITE_STRAPI_URL || ""}${imgUrl}`
+      : "https://via.placeholder.com/800x600?text=No+Image";
+    setFeaturedImageUrl(resolved);
+  }, [property]);
 
   const handleBookNow = () => {
     if (!checkIn || !checkOut) {
@@ -139,15 +152,13 @@ const PropertyDetail = () => {
   }
 
   const attr = property;
-  const imageUrl = attr.featuredPhoto?.url || attr.photos?.[0]?.url;
-  const fullImageUrl = imageUrl
-    ? imageUrl.startsWith("http")
-      ? imageUrl
-      : `${import.meta.env.VITE_STRAPI_URL || ""}${imageUrl}`
-    : "https://via.placeholder.com/800x600?text=No+Image";
 
   // Prepare all photos for stacked gallery
   const allPhotos = attr.photos && attr.photos.length > 0 ? attr.photos : [];
+
+  const handlePhotoSelect = (url: string) => {
+    setFeaturedImageUrl(url);
+  };
 
   const nights = checkIn && checkOut ? calculateNights(checkIn, checkOut) : 0;
   const totalAmount = nights * attr.pricePerNight;
@@ -166,33 +177,30 @@ const PropertyDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Back Button */}
-      <div className="bg-white border-b shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="text-gray-700 hover:text-accent"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-        </div>
+    <div className="min-h-screen bg-gray-50 pt-28 md:pt-32 pb-12">
+      {/* Isolated Back Button */}
+      <div className="max-w-[1400px] mx-auto px-4 xl:px-8 relative z-30">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center justify-center w-10 h-10 mb-4 xl:absolute xl:left-8 xl:top-0 bg-white border border-gray-200 text-gray-700 hover:bg-accent hover:text-white hover:border-accent rounded-full shadow-sm transition-all"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
       </div>
 
       {/* Photo Gallery Section */}
-      <div className="w-full px-4 py-6 md:py-8 lg:py-10">
+      <div className="w-full px-4 mb-6 md:mb-8 lg:mb-10">
         <div className="mx-auto max-w-7xl">
           {/* Desktop Layout (lg+): Featured + Stacked side-by-side */}
           <div className="hidden lg:grid lg:grid-cols-3 gap-8">
             {/* Featured Photo - Left (2/3 width) */}
             <div className="lg:col-span-2">
-              <Card className="overflow-hidden aspect-[4/3]">
+              <Card className="overflow-hidden aspect-[3/2]">
                 <img
-                  src={fullImageUrl}
+                  src={featuredImageUrl}
                   alt={attr.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-all duration-500 ease-in-out"
                 />
               </Card>
             </div>
@@ -202,6 +210,8 @@ const PropertyDetail = () => {
               <StackedPhotoGallery
                 photos={allPhotos}
                 baseUrl={import.meta.env.VITE_STRAPI_URL || ""}
+                onPhotoSelect={handlePhotoSelect}
+                className="h-full"
               />
             </div>
           </div>
@@ -210,11 +220,11 @@ const PropertyDetail = () => {
           <div className="hidden md:grid lg:hidden grid-cols-1 gap-6">
             {/* Featured Photo */}
             <div className="w-full">
-              <Card className="overflow-hidden aspect-[16/9]">
+              <Card className="overflow-hidden aspect-[3/2]">
                 <img
-                  src={fullImageUrl}
+                  src={featuredImageUrl}
                   alt={attr.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-all duration-500 ease-in-out"
                 />
               </Card>
             </div>
@@ -224,6 +234,7 @@ const PropertyDetail = () => {
               <StackedPhotoGallery
                 photos={allPhotos}
                 baseUrl={import.meta.env.VITE_STRAPI_URL || ""}
+                onPhotoSelect={handlePhotoSelect}
               />
             </div>
           </div>
@@ -233,6 +244,7 @@ const PropertyDetail = () => {
             <StackedPhotoGallery
               photos={allPhotos}
               baseUrl={import.meta.env.VITE_STRAPI_URL || ""}
+              onPhotoSelect={handlePhotoSelect}
             />
           </div>
         </div>
@@ -244,65 +256,59 @@ const PropertyDetail = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
             {/* Main Content Column (lg: 2/3) */}
             <div className="lg:col-span-2 space-y-6 md:space-y-8">
-              {/* Property Header */}
-              <div>
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
-                  {attr.title}
-                </h1>
-                <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 text-gray-600 mb-4">
-                  {/* <div className="flex items-center gap-1">
-                    <CheckCircle className="h-5 w-5 text-yellow-400 fill-yellow-400" />
-                    <span className="font-semibold">4.96</span>
-                    <span className="text-sm">(128 reviews)</span>
-                  </div> */}
-                  <div className="flex items-center gap-1">
-                    <MapPin className="h-5 w-5" />
+              
+              {/* Core Information Card */}
+              <Card className="border-0 shadow-sm rounded-2xl overflow-hidden">
+                <div className="p-6 md:p-8 border-b border-gray-100 bg-white">
+                  <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+                    {attr.title}
+                  </h1>
+                  <div className="flex items-center gap-2 text-gray-500 text-sm md:text-base">
+                    <MapPin className="h-4 w-4 md:h-5 md:w-5 text-accent shrink-0" />
                     <span>{attr.location}</span>
                   </div>
                 </div>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                <div className="flex items-center gap-2">
-                  <Bed className="h-5 w-5 text-primary flex-shrink-0" />
-                  <div>
-                    <p className="text-xs text-gray-600">Bedrooms</p>
-                    <span className="font-semibold text-gray-900">
-                      {attr.bedrooms}
-                    </span>
+                
+                {/* Quick Stats Grid */}
+                <div className="grid grid-cols-3 divide-x divide-gray-100 bg-gray-50/50">
+                  <div className="p-5 md:p-8 text-center flex flex-col items-center justify-center gap-2">
+                    <Bed className="h-6 w-6 text-primary" />
+                    <div>
+                      <span className="font-bold text-gray-900 text-lg md:text-xl block leading-tight">
+                        {attr.bedrooms}
+                      </span>
+                      <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Bedrooms</p>
+                    </div>
+                  </div>
+                  <div className="p-5 md:p-8 text-center flex flex-col items-center justify-center gap-2">
+                    <Bath className="h-6 w-6 text-primary" />
+                    <div>
+                      <span className="font-bold text-gray-900 text-lg md:text-xl block leading-tight">
+                        {attr.bathrooms}
+                      </span>
+                      <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Bathrooms</p>
+                    </div>
+                  </div>
+                  <div className="p-5 md:p-8 text-center flex flex-col items-center justify-center gap-2">
+                    <Users className="h-6 w-6 text-primary" />
+                    <div>
+                      <span className="font-bold text-gray-900 text-lg md:text-xl block leading-tight">
+                        {attr.maxGuests}
+                      </span>
+                      <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Guests</p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Bath className="h-5 w-5 text-primary flex-shrink-0" />
-                  <div>
-                    <p className="text-xs text-gray-600">Bathrooms</p>
-                    <span className="font-semibold text-gray-900">
-                      {attr.bathrooms}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-primary flex-shrink-0" />
-                  <div>
-                    <p className="text-xs text-gray-600">Max Guests</p>
-                    <span className="font-semibold text-gray-900">
-                      {attr.maxGuests}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              </Card>
 
               {/* Description */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg md:text-xl">
+              <Card className="border-0 shadow-sm rounded-2xl">
+                <CardContent className="p-6 md:p-8">
+                  <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                     About this property
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+                  </h2>
                   <div
-                    className="prose prose-sm md:prose-base max-w-none text-gray-700"
+                    className="prose prose-sm md:prose-base max-w-none text-gray-600 leading-relaxed"
                     dangerouslySetInnerHTML={{ __html: attr.description }}
                   />
                 </CardContent>
@@ -310,23 +316,23 @@ const PropertyDetail = () => {
 
               {/* Amenities */}
               {attr.amenities && attr.amenities.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg md:text-xl">
+                <Card className="border-0 shadow-sm rounded-2xl">
+                  <CardContent className="p-6 md:p-8">
+                    <h2 className="text-xl font-bold text-gray-900 mb-6">
                       Amenities
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                    </h2>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-4">
                       {attr.amenities.map((amenity, index) => {
                         const Icon = amenityIcons[amenity] || CheckCircle;
                         return (
                           <div
                             key={index}
-                            className="flex items-center gap-2 text-sm md:text-base text-gray-700"
+                            className="flex items-center gap-3 text-sm md:text-base text-gray-700"
                           >
-                            <Icon className="h-4 w-4 md:h-5 md:w-5 text-accent flex-shrink-0" />
-                            <span>{amenity}</span>
+                            <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                              <Icon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                            </div>
+                            <span className="font-medium">{amenity}</span>
                           </div>
                         );
                       })}
@@ -338,21 +344,21 @@ const PropertyDetail = () => {
 
             {/* Booking Widget Column (lg: 1/3, sticky on desktop) */}
             <div className="lg:col-span-1">
-              <Card className="lg:sticky lg:top-24">
-                <CardContent className="p-4 md:p-6">
-                  <div className="mb-6">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-bold text-primary">
+              <Card className="border-0 shadow-lg rounded-2xl lg:sticky lg:top-24">
+                <CardContent className="p-6 md:p-8">
+                  <div className="mb-8">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-bold text-gray-900">
                         {formatPrice(attr.pricePerNight)}
                       </span>
-                      <span className="text-gray-600">/night</span>
+                      <span className="text-gray-500 text-sm font-medium">/night</span>
                     </div>
                   </div>
 
                   {/* Date Pickers */}
-                  <div className="space-y-4 mb-6">
+                  <div className="space-y-6 mb-8">
                     <div>
-                      <Label className="mb-2 block">Check-in</Label>
+                      <Label className="text-xs text-gray-500 uppercase font-bold tracking-wide mb-2 block">Check-in</Label>
                       <DatePicker
                         selected={checkIn}
                         onChange={(date: SetStateAction<Date | null>) =>
@@ -363,13 +369,13 @@ const PropertyDetail = () => {
                         endDate={checkOut}
                         minDate={new Date()}
                         placeholderText="Select check-in date"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full pb-2 border-0 border-b-2 border-gray-100 rounded-none focus:outline-none focus:border-accent text-gray-900 font-medium transition-colors bg-transparent placeholder:font-normal placeholder:text-gray-400"
                         dateFormat="MMM dd, yyyy"
                       />
                     </div>
 
                     <div>
-                      <Label className="mb-2 block">Check-out</Label>
+                      <Label className="text-xs text-gray-500 uppercase font-bold tracking-wide mb-2 block">Check-out</Label>
                       <DatePicker
                         selected={checkOut}
                         onChange={(date: SetStateAction<Date | null>) =>
@@ -380,7 +386,7 @@ const PropertyDetail = () => {
                         endDate={checkOut}
                         minDate={checkIn || new Date()}
                         placeholderText="Select check-out date"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full pb-2 border-0 border-b-2 border-gray-100 rounded-none focus:outline-none focus:border-accent text-gray-900 font-medium transition-colors bg-transparent placeholder:font-normal placeholder:text-gray-400"
                         dateFormat="MMM dd, yyyy"
                       />
                     </div>
@@ -398,29 +404,31 @@ const PropertyDetail = () => {
                         </div>
                       ) : availability ? (
                         <div
-                          className={`p-4 rounded-lg ${
+                          className={`p-4 rounded-xl flex items-center gap-3 ${
                             availability.available
-                              ? "bg-green-50 border border-green-200"
-                              : "bg-red-50 border border-red-200"
+                              ? "bg-green-50 text-green-800"
+                              : "bg-red-50 text-red-800"
                           }`}
                         >
-                          <div className="flex items-center">
-                            {availability.available ? (
-                              <>
-                                <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                                <span className="text-green-800 font-semibold">
-                                  Available!
-                                </span>
-                              </>
-                            ) : (
-                              <>
-                                <XCircle className="h-5 w-5 text-red-600 mr-2" />
-                                <span className="text-red-800 font-semibold">
-                                  Not available
-                                </span>
-                              </>
-                            )}
-                          </div>
+                          {availability.available ? (
+                            <>
+                              <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                                <CheckCircle className="h-5 w-5 text-green-600" />
+                              </div>
+                              <span className="font-semibold text-sm">
+                                Available!
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                                <XCircle className="h-5 w-5 text-red-600" />
+                              </div>
+                              <span className="font-semibold text-sm">
+                                Not available for selected dates
+                              </span>
+                            </>
+                          )}
                         </div>
                       ) : null}
                     </div>
@@ -428,16 +436,16 @@ const PropertyDetail = () => {
 
                   {/* Price Breakdown */}
                   {nights > 0 && (
-                    <div className="mb-6 space-y-3 pt-6 border-t">
-                      <div className="flex justify-between text-gray-700">
+                    <div className="mb-8 space-y-4 pt-6 border-t border-gray-100">
+                      <div className="flex justify-between text-gray-600 text-sm">
                         <span>
                           {formatPrice(attr.pricePerNight)} × {nights} night
                           {nights !== 1 ? "s" : ""}
                         </span>
-                        <span>{formatPrice(attr.pricePerNight * nights)}</span>
+                        <span className="font-medium text-gray-900">{formatPrice(attr.pricePerNight * nights)}</span>
                       </div>
-                      <div className="flex justify-between font-bold text-lg pt-3 border-t">
-                        <span>Total</span>
+                      <div className="flex justify-between font-bold text-lg pt-4 border-t border-gray-100">
+                        <span className="text-gray-900">Total</span>
                         <span className="text-primary">
                           {formatPrice(totalAmount)}
                         </span>
@@ -447,28 +455,32 @@ const PropertyDetail = () => {
 
                   {/* Book Button */}
                   <Button
-                    className="w-full bg-accent hover:bg-accent-600 text-white"
+                    className="w-full bg-accent hover:bg-accent-600 text-white rounded-xl shadow-md disabled:shadow-none"
                     size="lg"
                     onClick={handleBookNow}
                     disabled={!availability?.available || !checkIn || !checkOut}
                   >
                     <CheckCircle className="h-5 w-5 mr-2" />
-                    Reserve
+                    Reserve Now
                   </Button>
 
-                  <p className="text-sm text-gray-500 text-center mt-3">
+                  <p className="text-xs text-gray-500 font-medium text-center mt-4 tracking-wide uppercase">
                     You won't be charged yet
                   </p>
 
                   {/* Trust Badges */}
-                  <div className="mt-6 pt-6 border-t space-y-3">
-                    <div className="flex items-center gap-3 text-sm text-gray-700">
-                      <Shield className="h-5 w-5 text-success" />
-                      <span>Secure payment</span>
+                  <div className="mt-8 pt-6 border-t border-gray-100 grid grid-cols-2 gap-4">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
+                        <Shield className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <span className="text-xs font-semibold text-gray-600">Secure<br/>payment</span>
                     </div>
-                    <div className="flex items-center gap-3 text-sm text-gray-700">
-                      <CheckCircle className="h-5 w-5 text-success" />
-                      <span>Instant confirm</span>
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
+                        <CheckCircle className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <span className="text-xs font-semibold text-gray-600">Instant<br/>confirm</span>
                     </div>
                   </div>
                 </CardContent>

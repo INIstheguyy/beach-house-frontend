@@ -12,11 +12,15 @@ interface Photo {
 interface StackedPhotoGalleryProps {
   photos: Photo[];
   baseUrl?: string;
+  onPhotoSelect?: (url: string) => void;
+  className?: string;
 }
 
 const StackedPhotoGallery = ({
   photos,
   baseUrl = "",
+  onPhotoSelect,
+  className,
 }: StackedPhotoGalleryProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -24,7 +28,7 @@ const StackedPhotoGallery = ({
   // Ensure we have photos to display
   if (!photos || photos.length === 0) {
     return (
-      <div className="relative w-full aspect-[4/3] bg-gray-200 rounded-lg flex items-center justify-center">
+      <div className={`relative w-full bg-gray-200 rounded-lg flex items-center justify-center ${className || 'aspect-[3/2]'}`}>
         <p className="text-gray-500">No photos available</p>
       </div>
     );
@@ -43,6 +47,15 @@ const StackedPhotoGallery = ({
   const handleCardClick = () => {
     if (isAnimating) return;
 
+    // Fire callback with the current top photo's URL
+    if (onPhotoSelect) {
+      const topPhoto = photos[currentIndex];
+      const fullUrl = topPhoto.url.startsWith("http")
+        ? topPhoto.url
+        : `${baseUrl}${topPhoto.url}`;
+      onPhotoSelect(fullUrl);
+    }
+
     setIsAnimating(true);
 
     // Update index after animation completes
@@ -56,7 +69,7 @@ const StackedPhotoGallery = ({
 
   return (
     <div
-      className="relative w-full aspect-[4/3] cursor-pointer select-none"
+      className={`relative w-full cursor-pointer select-none ${className || 'aspect-[3/2]'}`}
       onClick={handleCardClick}
     >
       <div className="relative w-full h-full">
@@ -77,7 +90,7 @@ const StackedPhotoGallery = ({
                   rotate(${position === 0 ? 0 : position % 2 === 0 ? position * 1.5 : -position * 1.5}deg)
                   scale(${1 - position * 0.02})
                 `,
-                zIndex: isTop && isAnimating ? 0 : 100 - position,
+                zIndex: isTop && isAnimating ? 0 : 40 - position,
                 opacity: position < 4 ? 1 - position * 0.15 : 0,
               }}
             >

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { bookingService } from '@/services/bookingService';
 import { formatPrice } from '@/utils/priceHelpers';
 import { formatDate } from '@/utils/dateHelpers';
@@ -157,206 +157,199 @@ const BookingConfirmation = () => {
   const propertyLocation = property?.location || '';
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto">
-          {/* Success Header */}
-          <div className="text-center mb-10">
-            <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="h-14 w-14 text-green-600" />
+    <div className="min-h-screen bg-gray-50 pt-28 md:pt-32 pb-12">
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Success Banner */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+              <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Booking Confirmed!
-            </h1>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              We've sent a confirmation email to{' '}
-              <span className="font-semibold text-gray-900">{guestEmail}</span>
-            </p>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+                Booking Confirmed!
+              </h1>
+              <p className="text-gray-600 text-sm md:text-base">
+                Confirmation details sent to{' '}
+                <span className="font-semibold text-gray-900">{guestEmail}</span>
+              </p>
+            </div>
           </div>
+          <div className="bg-accent/5 px-6 py-4 rounded-xl flex border border-accent/10 min-w-[200px] flex-col items-center md:items-start">
+            <p className="text-xs text-accent uppercase font-semibold mb-1">
+              Booking Ref
+            </p>
+            <div className="flex items-center justify-center md:justify-start gap-3">
+              <p className="text-xl font-mono font-bold text-gray-900 tracking-wider">
+                {bookingReference}
+              </p>
+              <button
+                onClick={() => navigator.clipboard.writeText(bookingReference)}
+                className="text-accent hover:text-accent-600 transition-colors"
+                title="Copy Reference"
+              >
+                <Download className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
 
-          {/* Booking Reference */}
-          <Card className="mb-8 border-0 shadow-lg">
-            <CardContent className="p-8">
-              <div className="text-center">
-                <p className="text-sm text-gray-600 uppercase tracking-wide mb-3">Booking Reference</p>
-                <div className="inline-block bg-accent/10 px-8 py-4 rounded-xl">
-                  <p className="text-3xl font-bold text-accent font-mono tracking-wider">
-                    {bookingReference}
-                  </p>
-                </div>
-                <p className="text-sm text-gray-500 mt-3">
-                  Save this for your records
-                </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-3"
-                  onClick={() => navigator.clipboard.writeText(bookingReference)}
-                >
-                  Copy
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Booking Details */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Booking Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Property Info */}
-              <div className="flex items-start gap-3 pb-4 border-b">
-                <Home className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <p className="font-semibold text-lg">{propertyTitle}</p>
-                  <p className="text-gray-600">{propertyLocation}</p>
-                </div>
-              </div>
-
-              {/* Check-in/out */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-start gap-3">
-                  <Calendar className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
-                  <div>
-                    <p className="text-sm text-gray-600">Check-in</p>
-                    <p className="font-semibold">{formatDate(checkIn)}</p>
+        {/* Main Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Left Column (Property & Next Steps) */}
+          <div className="lg:col-span-2 space-y-6 lg:space-y-8">
+            <Card className="border-0 shadow-sm overflow-hidden rounded-2xl">
+              <div className="p-0">
+                <div className="p-6 md:p-8 border-b border-gray-100">
+                  <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Home className="h-5 w-5 text-accent" />
+                    Property Details
+                  </h2>
+                  <div className="space-y-1">
+                    <p className="font-semibold text-lg md:text-xl text-gray-900">
+                      {propertyTitle}
+                    </p>
+                    <p className="text-gray-500 flex items-center gap-1 text-sm md:text-base">
+                      {propertyLocation}
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <Calendar className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
-                  <div>
-                    <p className="text-sm text-gray-600">Check-out</p>
-                    <p className="font-semibold">{formatDate(checkOut)}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100 bg-gray-50/50">
+                  <div className="p-6 md:p-8">
+                    <p className="text-sm font-medium text-gray-500 mb-1 flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-primary" /> Check-in
+                    </p>
+                    <p className="font-bold text-gray-900 text-lg">
+                      {formatDate(checkIn)}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">From 2:00 PM</p>
                   </div>
-                </div>
-              </div>
-
-              {/* Guest Info */}
-              <div className="pt-4 border-t space-y-3">
-                <div className="flex items-center gap-3">
-                  <User className="h-5 w-5 text-primary" />
-                  <div>
-                    <p className="text-sm text-gray-600">Guest Name</p>
-                    <p className="font-semibold">{guestName}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-primary" />
-                  <div>
-                    <p className="text-sm text-gray-600">Email</p>
-                    <p className="font-semibold">{guestEmail}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 text-primary" />
-                  <div>
-                    <p className="text-sm text-gray-600">Phone</p>
-                    <p className="font-semibold">{guestPhone}</p>
+                  <div className="p-6 md:p-8">
+                    <p className="text-sm font-medium text-gray-500 mb-1 flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-primary" /> Check-out
+                    </p>
+                    <p className="font-bold text-gray-900 text-lg">
+                      {formatDate(checkOut)}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">By 11:00 AM</p>
                   </div>
                 </div>
               </div>
+            </Card>
 
-              {/* Payment Info */}
-              <div className="pt-4 border-t">
-                <div className="flex items-start gap-3 mb-4">
-                  <CreditCard className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-600">Payment Details</p>
-                    <div className="mt-2 space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">
-                          {numberOfNights} night{numberOfNights !== 1 ? 's' : ''} × {formatPrice(pricePerNight)}
-                        </span>
-                        <span className="font-semibold">
-                          {formatPrice(totalAmount)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-lg font-bold pt-2 border-t">
-                        <span>Total Paid</span>
-                        <span className="text-green-600">
-                          {formatPrice(totalAmount)}
-                        </span>
-                      </div>
+            <Card className="border-0 shadow-sm rounded-2xl">
+              <CardContent className="p-6 md:p-8">
+                <h2 className="text-lg font-bold text-gray-900 mb-6">What's Next?</h2>
+                <div className="space-y-6">
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center font-bold text-sm">
+                      1
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 text-sm md:text-base">Check Your Email</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        You'll receive a confirmation email with all booking details.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center font-bold text-sm">
+                      2
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 text-sm md:text-base">Property Owner Contact</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        The property owner will contact you 24 hours before check-in with directions and access details.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center font-bold text-sm">
+                      3
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 text-sm md:text-base">Enjoy Your Stay!</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Arrive on your check-in date and enjoy your beach getaway.
+                      </p>
                     </div>
                   </div>
                 </div>
-                <p className="text-sm text-gray-500">
-                  Transaction ID: {flutterwaveTransactionId}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* What's Next */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>What's Next?</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ol className="space-y-4">
-                <li className="flex gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
-                    1
-                  </div>
-                  <div>
-                    <p className="font-semibold">Check Your Email</p>
-                    <p className="text-sm text-gray-600">
-                      You'll receive a confirmation email with all booking details and property contact information.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
-                    2
-                  </div>
-                  <div>
-                    <p className="font-semibold">Property Owner Contact</p>
-                    <p className="text-sm text-gray-600">
-                      The property owner will contact you 24 hours before check-in with directions and access details.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
-                    3
-                  </div>
-                  <div>
-                    <p className="font-semibold">Enjoy Your Stay!</p>
-                    <p className="text-sm text-gray-600">
-                      Arrive on your check-in date and enjoy your beach getaway.
-                    </p>
-                  </div>
-                </li>
-              </ol>
-            </CardContent>
-          </Card>
-
-          {/* Action Buttons */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => window.print()}
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Print Confirmation
-            </Button>
-            <Link to="/contact" className="w-full">
-              <Button variant="outline" className="w-full">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Contact Support
-              </Button>
-            </Link>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Browse More */}
-          <div className="mt-8 text-center">
-            <Link to="/properties">
-              <Button className="bg-accent hover:bg-accent-600">
-                Browse More Properties
+          {/* Right Column (Summary, Guest Info & Actions) */}
+          <div className="space-y-6 lg:space-y-8">
+            <Card className="border-0 shadow-sm rounded-2xl">
+              <CardContent className="p-6 md:p-8">
+                <h3 className="font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
+                  <CreditCard className="h-5 w-5 text-accent" /> Payment Summary
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>
+                      {numberOfNights} night{numberOfNights !== 1 ? 's' : ''} × {formatPrice(pricePerNight)}
+                    </span>
+                    <span>{formatPrice(totalAmount)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-900 font-bold text-lg pt-4 border-t border-gray-100">
+                    <span>Total Paid</span>
+                    <span className="text-green-600">{formatPrice(totalAmount)}</span>
+                  </div>
+                  <p className="text-xs text-gray-400 font-mono mt-4 pt-4 border-t border-gray-100 break-all">
+                    TX: {flutterwaveTransactionId}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-sm rounded-2xl">
+              <CardContent className="p-6 md:p-8">
+                <h3 className="font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
+                  <User className="h-5 w-5 text-accent" /> Guest Information
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Name</p>
+                    <p className="font-medium text-gray-900 text-sm md:text-base">{guestName}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Contact</p>
+                    <div className="space-y-2 mt-1">
+                      <p className="font-medium text-gray-900 flex items-center gap-2 text-sm md:text-base">
+                        <Mail className="h-4 w-4 text-gray-400 shrink-0" /> <span className="truncate">{guestEmail}</span>
+                      </p>
+                      <p className="font-medium text-gray-900 flex items-center gap-2 text-sm md:text-base">
+                        <Phone className="h-4 w-4 text-gray-400 shrink-0" /> <span>{guestPhone}</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="space-y-3">
+              <Button
+                variant="outline"
+                className="w-full bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
+                onClick={() => window.print()}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Print Confirmation
               </Button>
-            </Link>
+              <Link to="/contact" className="block w-full">
+                <Button variant="outline" className="w-full bg-white text-gray-700 hover:bg-gray-50 border-gray-200">
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Contact Support
+                </Button>
+              </Link>
+              <Link to="/properties" className="block w-full pt-4">
+                <Button className="w-full bg-accent hover:bg-accent-600 text-white">
+                  Browse More Properties
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

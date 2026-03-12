@@ -59,7 +59,7 @@ const FilterHero = ({
       {/* Filter Card positioned at baseline - Desktop/Tablet */}
       <div className="hidden md:block relative -mt-32 z-20">
         <div className="w-full px-4 max-w-5xl mx-auto">
-          <Card className="w-full bg-white/95 backdrop-blur-sm border-0 shadow-2xl rounded-2xl overflow-hidden">
+          <Card className="w-full bg-white/95 backdrop-blur-sm border-0 mb-3 shadow-2xl rounded-2xl overflow-hidden">
             <CardContent className="p-5">
               <div className="flex flex-col gap-6">
                 {/* Row 1: Centered Tabs and Clear Button */}
@@ -208,7 +208,7 @@ const FilterHero = ({
 
       {/* Mobile Filter Card - Collapsible */}
       <div className="md:hidden relative -mt-16 z-20 px-4">
-        <Card className="w-full bg-white/95 backdrop-blur-sm border-0  rounded-2xl overflow-hidden">
+        <Card className="w-full bg-white/95 backdrop-blur-sm border-0 mb-1 rounded-2xl overflow-hidden">
           <CardContent className="p-4">
             {/* Property Type Tabs - Always visible */}
             <div className="mb-3">

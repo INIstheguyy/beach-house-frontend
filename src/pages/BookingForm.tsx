@@ -18,7 +18,6 @@ import {
   CreditCard,
   Shield,
   MapPin,
-  CheckCircle,
 } from "lucide-react";
 
 interface LocationState {
@@ -158,73 +157,24 @@ const BookingForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="max-w-5xl mx-auto">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-8">
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate(-1)}
-                  className="text-gray-700 hover:text-accent"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
-                </Button>
-                <h1 className="text-xl font-bold text-gray-900 hidden md:block">
-                  Lagos Beach Rentals
-                </h1>
-              </div>
-              <Button variant="outline" size="sm">
-                <User className="h-4 w-4 mr-2" />
-                Sign In
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-5xl mx-auto">
-          {/* Progress Steps */}
+    <div className="min-h-screen bg-gray-50 pt-28 md:pt-32 pb-12">
+      <div className="container mx-auto px-4">
+        <div className="max-w-5xl mx-auto relative">
+          {/* Isolated Back Button */}
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center justify-center w-10 h-10 mb-6 xl:absolute xl:-left-16 xl:top-0 bg-white border border-gray-200 text-gray-700 hover:bg-accent hover:text-white hover:border-accent rounded-full shadow-sm transition-all"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          
+          {/* Title */}
           <div className="mb-8">
-            <div className="flex items-center justify-center">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center text-sm font-semibold">
-                    1
-                  </div>
-                  <span className="text-sm font-medium text-accent">
-                    Details
-                  </span>
-                </div>
-                <div className="w-12 h-0.5 bg-gray-300"></div>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold">
-                    2
-                  </div>
-                  <span className="text-sm font-medium text-gray-600">
-                    Payment
-                  </span>
-                </div>
-                <div className="w-12 h-0.5 bg-gray-300"></div>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold">
-                    3
-                  </div>
-                  <span className="text-sm font-medium text-gray-600">
-                    Confirm
-                  </span>
-                </div>
-              </div>
-            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+              Complete your booking
+            </h2>
           </div>
-
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">
-            Step 1 of 3: Details
-          </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Booking Form - Left Column */}
@@ -241,14 +191,14 @@ const BookingForm = () => {
                         Full Name <span className="text-red-500">*</span>
                       </Label>
                       <div className="relative mt-2">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <User className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <Input
                           id="name"
                           name="name"
                           type="text"
                           value={formData.name}
                           onChange={handleChange}
-                          className="pl-10"
+                          className="pl-7 border-0 border-b border-gray-300 rounded-none shadow-none focus-visible:ring-0 focus-visible:border-accent"
                           placeholder="John Doe"
                         />
                       </div>
@@ -265,14 +215,14 @@ const BookingForm = () => {
                         Email Address <span className="text-red-500">*</span>
                       </Label>
                       <div className="relative mt-2">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Mail className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <Input
                           id="email"
                           name="email"
                           type="email"
                           value={formData.email}
                           onChange={handleChange}
-                          className="pl-10"
+                          className="pl-7 border-0 border-b border-gray-300 rounded-none shadow-none focus-visible:ring-0 focus-visible:border-accent"
                           placeholder="john@example.com"
                         />
                       </div>
@@ -289,14 +239,14 @@ const BookingForm = () => {
                         Phone Number <span className="text-red-500">*</span>
                       </Label>
                       <div className="relative mt-2">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Phone className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <Input
                           id="phone"
                           name="phone"
                           type="tel"
                           value={formData.phone}
                           onChange={handleChange}
-                          className="pl-10"
+                          className="pl-7 border-0 border-b border-gray-300 rounded-none shadow-none focus-visible:ring-0 focus-visible:border-accent"
                           placeholder="+234 801 234 5678"
                         />
                       </div>
@@ -313,7 +263,7 @@ const BookingForm = () => {
                         Number of Guests <span className="text-red-500">*</span>
                       </Label>
                       <div className="relative mt-2">
-                        <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Users className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <Input
                           id="numberOfGuests"
                           name="numberOfGuests"
@@ -322,7 +272,7 @@ const BookingForm = () => {
                           max={property.maxGuests}
                           value={formData.numberOfGuests}
                           onChange={handleChange}
-                          className="pl-10"
+                          className="pl-7 border-0 border-b border-gray-300 rounded-none shadow-none focus-visible:ring-0 focus-visible:border-accent"
                         />
                       </div>
                       <p className="text-sm text-gray-500 mt-1">
@@ -340,8 +290,8 @@ const BookingForm = () => {
                         name="specialRequests"
                         value={formData.specialRequests}
                         onChange={handleChange}
-                        className="mt-2"
-                        rows={4}
+                        className="mt-2 border-0 border-b border-gray-300 rounded-none shadow-none focus-visible:ring-0 focus-visible:border-accent"
+                        rows={3}
                         placeholder="Any special requirements or requests..."
                       />
                     </div>
@@ -403,13 +353,6 @@ const BookingForm = () => {
                     <h3 className="font-semibold text-lg text-gray-900">
                       {property.title}
                     </h3>
-                    <div className="flex items-center gap-1 mt-1">
-                      <CheckCircle className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-semibold">4.96</span>
-                      <span className="text-xs text-gray-500">
-                        (124 reviews)
-                      </span>
-                    </div>
                   </div>
 
                   <div className="border-t pt-4 space-y-3">
