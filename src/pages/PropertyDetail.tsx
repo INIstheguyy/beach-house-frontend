@@ -114,15 +114,13 @@ const PropertyDetail = () => {
     if (!property) return;
     console.log("Booking property:", property.id);
 
-    // Navigate to booking page with state
-    navigate("/booking", {
-      state: {
-        property: property,
-        propertyId: property.id,
-        checkIn: formatDateForAPI(checkIn),
-        checkOut: formatDateForAPI(checkOut),
-      },
+    const bookingParams = new URLSearchParams({
+      property: property.documentId,
+      checkIn: formatDateForAPI(checkIn),
+      checkOut: formatDateForAPI(checkOut),
     });
+
+    navigate(`/booking?${bookingParams.toString()}`);
   };
 
   if (loading) {

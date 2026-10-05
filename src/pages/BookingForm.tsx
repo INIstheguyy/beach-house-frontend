@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { bookingService } from "@/services/bookingService";
+import { propertyService } from "@/services/propertyService";
 import { formatPrice } from "@/utils/priceHelpers";
 import { formatDate, calculateNights } from "@/utils/dateHelpers";
 import {
@@ -19,20 +20,18 @@ import {
   Shield,
   MapPin,
 } from "lucide-react";
-
-interface LocationState {
-  property: any;
-  propertyId: string;
-  checkIn: string;
-  checkOut: string;
-}
+import type { Property } from "@/types";
 
 const BookingForm = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state as LocationState;
+  const [searchParams] = useSearchParams();
+  const propertyDocumentId = searchParams.get("property");
+  const checkIn = searchParams.get("checkIn") || "";
+  const checkOut = searchParams.get("checkOut") || "";
 
   const [loading, setLoading] = useState(false);
+  const [loadingProperty, setLoadingProperty] = useState(true);
+  const [property, setProperty] = useState<Property | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -47,8 +46,35 @@ const BookingForm = () => {
     phone: "",
   });
 
-  // If no booking data, redirect back
-  if (!state || !state.property) {
+  useEffect(() => {
+    if (!propertyDocumentId || !checkIn || !checkOut) {
+      setLoadingProperty(false);
+      return;
+    }
+
+    const loadProperty = async () => {
+      try {
+        setLoadingProperty(true);
+        setProperty(await propertyService.getById(propertyDocumentId));
+      } catch (error) {
+        console.error("Failed to load booking property:", error);
+      } finally {
+        setLoadingProperty(false);
+      }
+    };
+
+    loadProperty();
+  }, [propertyDocumentId, checkIn, checkOut]);
+
+  if (loadingProperty) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  if (!property || !propertyDocumentId || !checkIn || !checkOut) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Card>
@@ -65,7 +91,6 @@ const BookingForm = () => {
     );
   }
 
-  const { property, propertyId, checkIn, checkOut } = state;
   const nights = calculateNights(checkIn, checkOut);
   const totalAmount = nights * property.pricePerNight;
 
@@ -124,7 +149,7 @@ const BookingForm = () => {
 
     try {
       const bookingData = {
-        propertyId,
+        propertyId: String(property.id),
         checkIn,
         checkOut,
         guestDetails: {

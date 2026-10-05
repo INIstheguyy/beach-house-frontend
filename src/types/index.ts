@@ -26,7 +26,7 @@ export interface Property {
   slug: string;
   description: string;
   location: string;
-  propertyType: "Beach House" | "Apartment" | "Villa";
+  propertyType: "Beach House" | "Apartment" | "Villa" | "Other-Services";
   pricePerNight: number;
   maxGuests: number;
   bedrooms: number;
@@ -160,7 +160,7 @@ export interface BookingVerifyResponse {
 
 // Filter types
 export interface PropertyFilters {
-  propertyType?: "Beach House" | "Apartment" | "Villa";
+  propertyType?: "Beach House" | "Apartment" | "Villa" | "Other-Services";
   minPrice?: number;
   maxPrice?: number;
   minBedrooms?: number;

@@ -6,6 +6,16 @@ import type {
   StrapiResponse,
 } from "@/types";
 
+type PropertyApiResponse = Omit<Property, "maxGuests"> & {
+  Number?: number;
+  maxGuests?: number;
+};
+
+const normalizeProperty = (property: PropertyApiResponse): Property => ({
+  ...property,
+  maxGuests: property.maxGuests ?? property.Number ?? 1,
+});
+
 export const propertyService = {
   // Get all properties
   async getAll(filters: PropertyFilters = {}): Promise<Property[]> {
@@ -38,22 +48,22 @@ export const propertyService = {
 
     params.append("populate", "*");
 
-    const response = await api.get<StrapiResponse<Property[]>>(
+    const response = await api.get<StrapiResponse<PropertyApiResponse[]>>(
       `/properties?${params.toString()}`,
     );
-    return response.data.data;
+    return response.data.data.map(normalizeProperty);
   },
 
   // Get single property
   async getById(id: string): Promise<Property> {
-    const response = await api.get<StrapiResponse<Property>>(
+    const response = await api.get<StrapiResponse<PropertyApiResponse>>(
       `/properties/${id}?populate=*`,
     );
-    return response.data.data;
+    return normalizeProperty(response.data.data);
   },
   // Check availability
   async checkAvailability(
-    propertyDocumentId: number,
+    propertyDocumentId: number | string,
     checkIn: string,
     checkOut: string,
   ): Promise<AvailabilityResponse> {
