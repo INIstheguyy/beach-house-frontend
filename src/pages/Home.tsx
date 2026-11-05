@@ -6,6 +6,9 @@ import type { Property } from "@/types";
 import { ArrowRight } from "lucide-react";
 import PropertyCard from "@/components/property/PropertyCard";
 import PropertyCardSkeleton from "@/components/property/PropertyCardSkeleton";
+import PinnedHorizontalScroll, {
+  PINNED_STAGE_HEIGHT,
+} from "@/components/common/PinnedHorizontalScroll";
 import PopularDestinations from "@/components/home/PopularDestinations";
 import LocalExperience from "@/components/home/LocalExperience";
 import AnimatedAmenities from "@/components/home/AnimatedAmenities";
@@ -146,11 +149,14 @@ const Home = () => {
                 ))}
               </div>
               {/* Mobile/Tablet Loading Skeleton */}
-              <div className="lg:hidden -mx-4 px-4 overflow-hidden pb-8 flex gap-4">
+              <div
+                className="lg:hidden -mx-4 flex gap-4 overflow-hidden px-4"
+                style={{ height: PINNED_STAGE_HEIGHT }}
+              >
                 {[1, 2].map((i) => (
                   <PropertyCardSkeleton
                     key={i}
-                    className="shrink-0 w-[85vw] md:w-[70vw]"
+                    className="h-full sm:h-full w-[85vw] md:w-[60vw] shrink-0"
                   />
                 ))}
               </div>
@@ -164,16 +170,17 @@ const Home = () => {
                 ))}
               </div>
 
-              {/* Mobile/Tablet Carousel: Horizontal scroll with center focus */}
-              <div className="lg:hidden -mx-4 px-4 overflow-x-auto pb-8 snap-x snap-mandatory flex gap-4 scrollbar-hide">
-                {featuredProperties.map((property) => (
-                  <div
-                    key={property.documentId}
-                    className="snap-center shrink-0 w-[85vw] md:w-[70vw] transition-all duration-300"
-                  >
-                    <PropertyCard property={property} />
-                  </div>
-                ))}
+              {/* Mobile/Tablet: pinned scroll, vertical scroll moves the cards sideways */}
+              <div className="lg:hidden">
+                <PinnedHorizontalScroll fallbackItemClassName="h-[420px]">
+                  {featuredProperties.map((property) => (
+                    <PropertyCard
+                      key={property.documentId}
+                      property={property}
+                      fill
+                    />
+                  ))}
+                </PinnedHorizontalScroll>
               </div>
             </>
           )}

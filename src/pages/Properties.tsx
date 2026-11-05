@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,9 @@ import { Button } from "@/components/ui/button";
 import { propertyService } from "@/services/propertyService";
 import PropertyCard from "@/components/property/PropertyCard";
 import PropertyCardSkeleton from "@/components/property/PropertyCardSkeleton";
+import PinnedHorizontalScroll, {
+  PINNED_STAGE_HEIGHT,
+} from "@/components/common/PinnedHorizontalScroll";
 import FilterHero from "@/components/property/FilterHero";
 import type { Property, PropertyFilters } from "@/types";
 
@@ -20,7 +23,6 @@ const Properties = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
-  const carouselRef = useRef<HTMLDivElement>(null);
 
   const [filters, setFilters] = useState<PropertyFilters>({
     propertyType: (searchParams.get("type") as any) || undefined,
@@ -42,44 +44,6 @@ const Properties = () => {
   useEffect(() => {
     loadProperties();
   }, [filters]);
-
-  // Intersection Observer for carousel center-focus effect with slower transitions
-  useEffect(() => {
-    if (!carouselRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const card = entry.target as HTMLElement;
-          if (entry.intersectionRatio >= 0.6) {
-            // Center card - scale up and full opacity (higher threshold for slower effect)
-            card.style.transform = "scale(1.08)";
-            card.style.opacity = "1";
-            card.style.zIndex = "10";
-          } else if (entry.intersectionRatio >= 0.3) {
-            // Mid-range - subtle scaling
-            card.style.transform = "scale(0.95)";
-            card.style.opacity = "0.75";
-            card.style.zIndex = "5";
-          } else {
-            // Side cards - scale down and reduce opacity
-            card.style.transform = "scale(0.9)";
-            card.style.opacity = "0.6";
-            card.style.zIndex = "0";
-          }
-        });
-      },
-      {
-        root: carouselRef.current,
-        threshold: [0, 0.3, 0.6, 1],
-      },
-    );
-
-    const cards = carouselRef.current.querySelectorAll(".carousel-card");
-    cards.forEach((card) => observer.observe(card));
-
-    return () => observer.disconnect();
-  }, [properties, loading]);
 
   const loadProperties = async () => {
     try {
@@ -190,11 +154,14 @@ const Properties = () => {
                 ))}
               </div>
             {/* Mobile/Tablet Loading Skeleton */}
-            <div className="lg:hidden -mx-4 px-4 overflow-hidden pb-8 flex gap-4">
+            <div
+                className="lg:hidden -mx-4 flex gap-4 overflow-hidden px-4"
+                style={{ height: PINNED_STAGE_HEIGHT }}
+              >
                 {[1, 2].map((i) => (
                   <PropertyCardSkeleton
                     key={i}
-                    className="shrink-0 w-[85vw] md:w-[45vw]"
+                    className="h-full sm:h-full w-[85vw] md:w-[60vw] shrink-0"
                   />
                 ))}
               </div>
@@ -221,21 +188,17 @@ const Properties = () => {
               ))}
             </div>
 
-            {/* Mobile/Tablet Carousel: Horizontal scroll with slower center focus */}
-            <div
-              ref={carouselRef}
-              className="lg:hidden -mx-4 px-4 overflow-x-auto pb-8 snap-x snap-mandatory flex gap-6 scrollbar-hide scroll-smooth"
-              style={{ scrollBehavior: "smooth" }}
-            >
-              {properties.map((property) => (
-                <div
-                  key={property.documentId}
-                  className="carousel-card snap-center shrink-0 w-[85vw] md:w-[45vw] transition-all duration-700 ease-out"
-                  style={{ transformOrigin: "center center" }}
-                >
-                  <PropertyCard property={property} />
-                </div>
-              ))}
+            {/* Mobile/Tablet: pinned scroll, vertical scroll moves the cards sideways */}
+            <div className="lg:hidden">
+              <PinnedHorizontalScroll fallbackItemClassName="h-[420px]">
+                {properties.map((property) => (
+                  <PropertyCard
+                    key={property.documentId}
+                    property={property}
+                    fill
+                  />
+                ))}
+              </PinnedHorizontalScroll>
             </div>
           </>
         )}

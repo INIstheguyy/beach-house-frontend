@@ -3,13 +3,16 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 import { formatPrice } from "@/utils/priceHelpers";
+import { cn } from "@/lib/utils";
 import type { Property } from "@/types";
 
 interface PropertyCardProps {
   property: Property;
+  /** Stretch to fill the parent's height (used inside the pinned scroller). */
+  fill?: boolean;
 }
 
-const PropertyCard = ({ property }: PropertyCardProps) => {
+const PropertyCard = ({ property, fill = false }: PropertyCardProps) => {
   const imageUrl = property.featuredPhoto?.url || property.photos?.[0]?.url;
   const fullImageUrl = imageUrl
     ? imageUrl.startsWith("http")
@@ -22,7 +25,10 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
       to={`/properties/${property.documentId}`}
       className="block h-full outline-none focus:ring-2 focus:ring-primary rounded-2xl"
     >
-      <Card className="relative overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer group h-[380px] sm:h-[420px] border-0 rounded-2xl">
+      <Card className={cn(
+          "relative overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer group border-0 rounded-2xl",
+          fill ? "h-full" : "h-[380px] sm:h-[420px]",
+        )}>
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
