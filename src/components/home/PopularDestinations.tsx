@@ -4,6 +4,7 @@ import {
   useMotionValue,
   useReducedMotion,
   useScroll,
+  useSpring,
   useTransform,
 } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -49,6 +50,14 @@ type Destination = (typeof destinations)[number];
 // The pinned stage fills the screen under the floating header (top: 6rem)
 // with a small margin at the bottom, so the photos use all the open space.
 const STAGE_HEIGHT = "calc(100svh - 7.5rem)";
+
+// Tuning knobs for how the section feels:
+// - SCROLL_PER_PX: px of vertical scroll needed per px of sideways movement.
+//   1 = cards move exactly with your finger, 1.5 = slower, 2 = even slower.
+// - SPRING: how the cards "glide" to catch up with your scroll position.
+//   Lower stiffness / higher damping = softer and more delayed.
+const SCROLL_PER_PX = 1.5;
+const SPRING = { stiffness: 90, damping: 28, mass: 0.5, restDelta: 0.0005 };
 
 const clamp = (n: number, min: number, max: number) =>
   Math.min(Math.max(n, min), max);
@@ -111,7 +120,7 @@ const SnapCarousel = () => (
 const PinnedScroller = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [travel, setTravel] = useState(0); // px the track must slide (sets wrapper height)
+  const [travel, setTravel] = useState(0); // px the track must slide sideways
 
   const { scrollY } = useScroll();
   const pinStart = useMotionValue(0); // scrollY at which the stage becomes pinned
@@ -142,12 +151,15 @@ const PinnedScroller = () => {
     return () => observer.disconnect();
   }, [pinStart, travelMV]);
 
-  // 0 → 1 across the pinned distance
-  const progress = useTransform(
+  // 0 → 1 across the pinned scroll distance (longer than the sideways travel,
+  // which is what slows the cards down)
+  const rawProgress = useTransform(
     [scrollY, pinStart, travelMV],
     ([y, start, dist]: number[]) =>
-      dist > 0 ? clamp((y - start) / dist, 0, 1) : 0,
+      dist > 0 ? clamp((y - start) / (dist * SCROLL_PER_PX), 0, 1) : 0,
   );
+  // Spring = the gentle easing: cards glide to the target instead of snapping
+  const progress = useSpring(rawProgress, SPRING);
   const x = useTransform(
     [progress, travelMV],
     ([p, dist]: number[]) => -p * dist,
@@ -157,8 +169,8 @@ const PinnedScroller = () => {
     <div
       ref={wrapperRef}
       className="-mx-4"
-      // 1px of vertical scroll = 1px of sideways movement
-      style={{ height: `calc(${STAGE_HEIGHT} + ${travel}px)` }}
+      // scroll distance = sideways travel x SCROLL_PER_PX
+      style={{ height: `calc(${STAGE_HEIGHT} + ${travel * SCROLL_PER_PX}px)` }}
     >
       <div
         className="sticky top-24 flex flex-col gap-4 overflow-hidden"
