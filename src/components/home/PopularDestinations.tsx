@@ -1,10 +1,12 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import {
   motion,
+  useMotionValue,
   useReducedMotion,
   useScroll,
   useTransform,
 } from "framer-motion";
+import { cn } from "@/lib/utils";
 import { MapPin } from "lucide-react";
 
 const destinations = [
@@ -44,17 +46,38 @@ const destinations = [
 
 type Destination = (typeof destinations)[number];
 
+// The pinned stage fills the screen under the floating header (top: 6rem)
+// with a small margin at the bottom, so the photos use all the open space.
+const STAGE_HEIGHT = "calc(100svh - 7.5rem)";
+
+const clamp = (n: number, min: number, max: number) =>
+  Math.min(Math.max(n, min), max);
+
 // One destination card for phones. Shared by the pinned scroller and the
-// reduced-motion fallback so both look identical.
-const MobileDestinationCard = ({ dest }: { dest: Destination }) => (
-  <div className="relative aspect-[4/3] w-[85vw] shrink-0 snap-center overflow-hidden rounded-[1.5rem] shadow-md">
-    <div
-      className="absolute inset-0 bg-cover bg-center"
-      style={{ backgroundImage: `url(${dest.image})` }}
+// reduced-motion fallback. Pass a height/aspect class to size it.
+const MobileDestinationCard = ({
+  dest,
+  className,
+}: {
+  dest: Destination;
+  className?: string;
+}) => (
+  <div
+    className={cn(
+      "relative w-[85vw] shrink-0 snap-center overflow-hidden rounded-[1.5rem] shadow-md",
+      className,
+    )}
+  >
+    <img
+      src={dest.image}
+      alt={dest.name}
+      decoding="async"
+      className="absolute inset-0 h-full w-full object-cover"
     />
     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
     <div className="absolute bottom-0 left-0 w-full p-6 text-white">
-      <span className="mb-3 inline-block rounded-full border border-white/20 bg-white/20 px-3 py-1 text-xs font-bold backdrop-blur-md">
+      {/* No backdrop-blur here: blur re-paints every frame while the card moves */}
+      <span className="mb-3 inline-block rounded-full border border-white/20 bg-black/40 px-3 py-1 text-xs font-bold">
         {dest.count}
       </span>
       <h3 className="mb-1 text-2xl font-bold">{dest.name}</h3>
@@ -67,7 +90,7 @@ const MobileDestinationCard = ({ dest }: { dest: Destination }) => (
 const SnapCarousel = () => (
   <div className="scrollbar-hide -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-8">
     {destinations.map((dest) => (
-      <MobileDestinationCard key={dest.id} dest={dest} />
+      <MobileDestinationCard key={dest.id} dest={dest} className="aspect-[4/3]" />
     ))}
   </div>
 );
@@ -78,46 +101,73 @@ const SnapCarousel = () => (
  * converted into sideways movement of the cards.
  *
  *  wrapper (tall: gives us the scroll distance)
- *   └─ sticky stage (one screen tall, stays pinned)
- *       └─ track (wide row of cards, moved with translateX)
+ *   └─ sticky stage (fills the screen under the header, stays pinned)
+ *       └─ track (wide row of tall cards, moved with translateX)
+ *
+ * Progress is calculated from the page scroll position and the wrapper's
+ * position in the page, NOT from the viewport height. Mobile browsers resize
+ * the viewport when their toolbars show/hide, which made the old version jump.
  */
 const PinnedScroller = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [travel, setTravel] = useState(0); // how far (px) the track must slide
+  const [travel, setTravel] = useState(0); // px the track must slide (sets wrapper height)
 
-  // Measure how much wider the track is than the screen (and re-measure on resize)
+  const { scrollY } = useScroll();
+  const pinStart = useMotionValue(0); // scrollY at which the stage becomes pinned
+  const travelMV = useMotionValue(0); // same travel, readable inside transforms
+
   useLayoutEffect(() => {
     const measure = () => {
+      const wrapper = wrapperRef.current;
       const track = trackRef.current;
       const stage = track?.parentElement;
-      if (!track || !stage) return;
-      setTravel(Math.max(0, track.scrollWidth - stage.clientWidth));
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
+      if (!wrapper || !track || !stage) return;
 
-  // 0 → 1 while the wrapper scrolls from "top reaches top" to "bottom reaches bottom"
-  const { scrollYProgress } = useScroll({
-    target: wrapperRef,
-    offset: ["start start", "end end"],
-  });
-  const x = useTransform(scrollYProgress, [0, 1], [0, -travel]);
+      const distance = Math.max(0, track.scrollWidth - stage.clientWidth);
+      const stickyTop = parseFloat(getComputedStyle(stage).top) || 0;
+
+      pinStart.set(
+        wrapper.getBoundingClientRect().top + window.scrollY - stickyTop,
+      );
+      travelMV.set(distance);
+      setTravel(distance);
+    };
+
+    measure();
+    // Watching the document (not the window) means we re-measure when content
+    // above us changes height, but NOT when a phone toolbar collapses.
+    const observer = new ResizeObserver(measure);
+    observer.observe(document.documentElement);
+    return () => observer.disconnect();
+  }, [pinStart, travelMV]);
+
+  // 0 → 1 across the pinned distance
+  const progress = useTransform(
+    [scrollY, pinStart, travelMV],
+    ([y, start, dist]: number[]) =>
+      dist > 0 ? clamp((y - start) / dist, 0, 1) : 0,
+  );
+  const x = useTransform(
+    [progress, travelMV],
+    ([p, dist]: number[]) => -p * dist,
+  );
 
   return (
     <div
       ref={wrapperRef}
       className="-mx-4"
       // 1px of vertical scroll = 1px of sideways movement
-      style={{ height: `calc(100svh + ${travel}px)` }}
+      style={{ height: `calc(${STAGE_HEIGHT} + ${travel}px)` }}
     >
-      <div className="sticky top-0 flex h-[100svh] flex-col justify-center gap-6 overflow-hidden">
+      <div
+        className="sticky top-24 flex flex-col gap-4 overflow-hidden"
+        style={{ height: STAGE_HEIGHT }}
+      >
         <motion.div
           ref={trackRef}
           style={{ x }}
-          className="flex w-max gap-4 px-4 will-change-transform"
+          className="flex min-h-0 w-max flex-1 gap-4 px-4 will-change-transform"
         >
           {destinations.map((dest) => (
             <MobileDestinationCard key={dest.id} dest={dest} />
@@ -125,9 +175,9 @@ const PinnedScroller = () => {
         </motion.div>
 
         {/* Progress bar so people can tell the section is moving sideways */}
-        <div className="mx-4 h-1 overflow-hidden rounded-full bg-primary/15">
+        <div className="mx-4 h-1 shrink-0 overflow-hidden rounded-full bg-primary/15">
           <motion.div
-            style={{ scaleX: scrollYProgress }}
+            style={{ scaleX: progress }}
             className="h-full origin-left rounded-full bg-primary"
           />
         </div>
@@ -145,9 +195,9 @@ const PopularDestinations = () => {
   // Note: the section uses overflow-clip, not overflow-hidden. Hidden would break
   // the sticky (pinned) scroller on mobile; clip hides overflow without that side effect.
   return (
-    <section className="py-20 bg-gray-50 overflow-clip">
+    <section className="py-14 md:py-20 bg-gray-50 overflow-clip">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-6 md:mb-12">
           <div className=" md:flex flex-row justify-between ">
             <h2 className="text-3xl md:text-5xl font-bold text-primary mb-4 font-heading">
               Popular Vacation Rental Destinations
