@@ -1,3 +1,10 @@
+import { useLayoutEffect, useRef, useState } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { MapPin } from "lucide-react";
 
 const destinations = [
@@ -35,9 +42,110 @@ const destinations = [
   },
 ];
 
-const PopularDestinations = () => {
+type Destination = (typeof destinations)[number];
+
+// One destination card for phones. Shared by the pinned scroller and the
+// reduced-motion fallback so both look identical.
+const MobileDestinationCard = ({ dest }: { dest: Destination }) => (
+  <div className="relative aspect-[4/3] w-[85vw] shrink-0 snap-center overflow-hidden rounded-[1.5rem] shadow-md">
+    <div
+      className="absolute inset-0 bg-cover bg-center"
+      style={{ backgroundImage: `url(${dest.image})` }}
+    />
+    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+    <div className="absolute bottom-0 left-0 w-full p-6 text-white">
+      <span className="mb-3 inline-block rounded-full border border-white/20 bg-white/20 px-3 py-1 text-xs font-bold backdrop-blur-md">
+        {dest.count}
+      </span>
+      <h3 className="mb-1 text-2xl font-bold">{dest.name}</h3>
+      <p className="line-clamp-2 text-sm text-white/80">{dest.description}</p>
+    </div>
+  </div>
+);
+
+// Fallback for people who prefer reduced motion: a normal swipeable carousel.
+const SnapCarousel = () => (
+  <div className="scrollbar-hide -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-8">
+    {destinations.map((dest) => (
+      <MobileDestinationCard key={dest.id} dest={dest} />
+    ))}
+  </div>
+);
+
+/**
+ * Pinned scroll: the page keeps scrolling vertically as normal, but while this
+ * block is on screen it "sticks" in place and the vertical scroll distance is
+ * converted into sideways movement of the cards.
+ *
+ *  wrapper (tall: gives us the scroll distance)
+ *   └─ sticky stage (one screen tall, stays pinned)
+ *       └─ track (wide row of cards, moved with translateX)
+ */
+const PinnedScroller = () => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [travel, setTravel] = useState(0); // how far (px) the track must slide
+
+  // Measure how much wider the track is than the screen (and re-measure on resize)
+  useLayoutEffect(() => {
+    const measure = () => {
+      const track = trackRef.current;
+      const stage = track?.parentElement;
+      if (!track || !stage) return;
+      setTravel(Math.max(0, track.scrollWidth - stage.clientWidth));
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // 0 → 1 while the wrapper scrolls from "top reaches top" to "bottom reaches bottom"
+  const { scrollYProgress } = useScroll({
+    target: wrapperRef,
+    offset: ["start start", "end end"],
+  });
+  const x = useTransform(scrollYProgress, [0, 1], [0, -travel]);
+
   return (
-    <section className="py-20 bg-gray-50 overflow-hidden">
+    <div
+      ref={wrapperRef}
+      className="-mx-4"
+      // 1px of vertical scroll = 1px of sideways movement
+      style={{ height: `calc(100svh + ${travel}px)` }}
+    >
+      <div className="sticky top-0 flex h-[100svh] flex-col justify-center gap-6 overflow-hidden">
+        <motion.div
+          ref={trackRef}
+          style={{ x }}
+          className="flex w-max gap-4 px-4 will-change-transform"
+        >
+          {destinations.map((dest) => (
+            <MobileDestinationCard key={dest.id} dest={dest} />
+          ))}
+        </motion.div>
+
+        {/* Progress bar so people can tell the section is moving sideways */}
+        <div className="mx-4 h-1 overflow-hidden rounded-full bg-primary/15">
+          <motion.div
+            style={{ scaleX: scrollYProgress }}
+            className="h-full origin-left rounded-full bg-primary"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MobileDestinations = () => {
+  const reduceMotion = useReducedMotion();
+  return reduceMotion ? <SnapCarousel /> : <PinnedScroller />;
+};
+
+const PopularDestinations = () => {
+  // Note: the section uses overflow-clip, not overflow-hidden. Hidden would break
+  // the sticky (pinned) scroller on mobile; clip hides overflow without that side effect.
+  return (
+    <section className="py-20 bg-gray-50 overflow-clip">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12">
           <div className=" md:flex flex-row justify-between ">
@@ -83,30 +191,9 @@ const PopularDestinations = () => {
           ))}
         </div>
 
-        {/* Mobile Layout: Horizontal Scroll with "Sticky" feel */}
-        {/* We use a horizontal scroll snap container for mobile */}
-        <div className="md:hidden -mx-4 px-4 overflow-x-auto pb-8 snap-x snap-mandatory flex gap-4 scrollbar-hide">
-          {destinations.map((dest) => (
-            <div
-              key={dest.id}
-              className="snap-center shrink-0 w-[85vw] relative rounded-[1.5rem] overflow-hidden aspect-[4/3] shadow-md"
-            >
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(${dest.image})` }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-              <div className="absolute bottom-0 left-0 p-6 w-full text-white">
-                <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold mb-3 border border-white/20">
-                  {dest.count}
-                </span>
-                <h3 className="text-2xl font-bold mb-1">{dest.name}</h3>
-                <p className="text-sm text-white/80 line-clamp-2">
-                  {dest.description}
-                </p>
-              </div>
-            </div>
-          ))}
+        {/* Mobile Layout: pinned section, vertical scroll moves the cards sideways */}
+        <div className="md:hidden">
+          <MobileDestinations />
         </div>
 
         {/* <div className="md:hidden mt-6 text-center">
