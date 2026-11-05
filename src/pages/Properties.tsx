@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 
 import { propertyService } from "@/services/propertyService";
 import PropertyCard from "@/components/property/PropertyCard";
+import PropertyCardSkeleton from "@/components/property/PropertyCardSkeleton";
 import FilterHero from "@/components/property/FilterHero";
 import type { Property, PropertyFilters } from "@/types";
 
@@ -184,34 +185,19 @@ const Properties = () => {
           <>
             {/* Desktop Loading Skeleton */}
             <div className="hidden lg:grid grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Card key={i} className="overflow-hidden">
-                  <div className="h-64 bg-gray-200 animate-pulse"></div>
-                  <CardContent className="p-6">
-                    <div className="h-6 bg-gray-200 rounded animate-pulse mb-3"></div>
-                    <div className="h-4 bg-gray-200 rounded animate-pulse mb-4 w-2/3"></div>
-                    <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
+                {[1, 2, 3].map((i) => (
+                  <PropertyCardSkeleton key={i} />
+                ))}
+              </div>
             {/* Mobile/Tablet Loading Skeleton */}
-            <div className="lg:hidden -mx-4 px-4 overflow-x-auto pb-8 snap-x snap-mandatory flex gap-4 scrollbar-hide">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Card
-                  key={i}
-                  className="snap-center shrink-0 w-[85vw] md:w-[45vw] overflow-hidden"
-                >
-                  <div className="h-64 bg-gray-200 animate-pulse"></div>
-                  <CardContent className="p-6">
-                    <div className="h-6 bg-gray-200 rounded animate-pulse mb-3"></div>
-                    <div className="h-4 bg-gray-200 rounded animate-pulse mb-4 w-2/3"></div>
-                    <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <div className="lg:hidden -mx-4 px-4 overflow-hidden pb-8 flex gap-4">
+                {[1, 2].map((i) => (
+                  <PropertyCardSkeleton
+                    key={i}
+                    className="shrink-0 w-[85vw] md:w-[45vw]"
+                  />
+                ))}
+              </div>
           </>
         ) : properties.length === 0 ? (
           <Card>
