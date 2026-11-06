@@ -12,10 +12,10 @@ import { Button } from "@/components/ui/button";
 
 import { propertyService } from "@/services/propertyService";
 import PropertyCard from "@/components/property/PropertyCard";
-import PropertyCardSkeleton from "@/components/property/PropertyCardSkeleton";
-import PinnedHorizontalScroll, {
-  PINNED_STAGE_HEIGHT,
-} from "@/components/common/PinnedHorizontalScroll";
+import PropertyCardSkeleton, {
+  PinnedPropertySkeletonRow,
+} from "@/components/property/PropertyCardSkeleton";
+import PinnedHorizontalScroll from "@/components/common/PinnedHorizontalScroll";
 import FilterHero from "@/components/property/FilterHero";
 import type { Property, PropertyFilters } from "@/types";
 
@@ -154,17 +154,7 @@ const Properties = () => {
                 ))}
               </div>
             {/* Mobile/Tablet Loading Skeleton */}
-            <div
-                className="lg:hidden -mx-4 flex gap-4 overflow-hidden px-4"
-                style={{ height: PINNED_STAGE_HEIGHT }}
-              >
-                {[1, 2].map((i) => (
-                  <PropertyCardSkeleton
-                    key={i}
-                    className="h-full sm:h-full w-[85vw] md:w-[60vw] shrink-0"
-                  />
-                ))}
-              </div>
+            <PinnedPropertySkeletonRow />
           </>
         ) : properties.length === 0 ? (
           <Card>

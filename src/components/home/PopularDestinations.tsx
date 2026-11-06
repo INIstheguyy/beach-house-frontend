@@ -1,5 +1,7 @@
+import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
 import PinnedHorizontalScroll from "@/components/common/PinnedHorizontalScroll";
+import { usePinnedDetailsOpacity } from "@/components/common/pinnedScroll";
 
 const destinations = [
   {
@@ -39,25 +41,38 @@ const destinations = [
 type Destination = (typeof destinations)[number];
 
 // One destination card for phones. Fills whatever box the scroller gives it.
-const MobileDestinationCard = ({ dest }: { dest: Destination }) => (
-  <div className="relative h-full w-full overflow-hidden rounded-[1.5rem] shadow-md">
-    <img
-      src={dest.image}
-      alt={dest.name}
-      decoding="async"
-      className="absolute inset-0 h-full w-full object-cover"
-    />
-    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-    <div className="absolute bottom-0 left-0 w-full p-6 text-white">
-      {/* No backdrop-blur here: blur re-paints every frame while the card moves */}
-      <span className="mb-3 inline-block rounded-full border border-white/20 bg-black/40 px-3 py-1 text-xs font-bold">
-        {dest.count}
-      </span>
-      <h3 className="mb-1 text-2xl font-bold">{dest.name}</h3>
-      <p className="line-clamp-2 text-sm text-white/80">{dest.description}</p>
+// While the card is narrow it shows just the photo; the text fades in as the
+// card widens (the scroller provides that 0 -> 1 value).
+const MobileDestinationCard = ({ dest }: { dest: Destination }) => {
+  const detailsOpacity = usePinnedDetailsOpacity();
+
+  return (
+    <div className="relative h-full w-full overflow-hidden rounded-[1.5rem] shadow-md">
+      <img
+        src={dest.image}
+        alt={dest.name}
+        decoding="async"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <motion.div
+        style={detailsOpacity ? { opacity: detailsOpacity } : undefined}
+        className="absolute inset-0"
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+        <div className="absolute bottom-0 left-0 w-full p-6 text-white">
+          {/* No backdrop-blur here: blur re-paints every frame while the card moves */}
+          <span className="mb-3 inline-block rounded-full border border-white/20 bg-black/40 px-3 py-1 text-xs font-bold">
+            {dest.count}
+          </span>
+          <h3 className="mb-1 text-2xl font-bold text-white">{dest.name}</h3>
+          <p className="line-clamp-2 text-sm text-white/80">
+            {dest.description}
+          </p>
+        </div>
+      </motion.div>
     </div>
-  </div>
-);
+  );
+};
 
 const PopularDestinations = () => {
   // Note: the section uses overflow-clip, not overflow-hidden. Hidden would break
@@ -100,7 +115,7 @@ const PopularDestinations = () => {
                   <MapPin className="h-4 w-4" />
                   <span>{dest.count}</span>
                 </div>
-                <h3 className="text-3xl font-bold mb-2">{dest.name}</h3>
+                <h3 className="text-3xl font-bold mb-2 text-white">{dest.name}</h3>
                 <p className="text-white/90 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
                   {dest.description}
                 </p>
