@@ -57,7 +57,7 @@ const Footer = () => {
             </div>
 
             <nav aria-label="Services">
-              <h3 className="mb-4 text-base font-bold md:mb-6 md:text-lg">
+              <h3 className="mb-4 text-base font-bold text-white md:mb-6 md:text-lg">
                 Services
               </h3>
               <ul className="space-y-3 text-sm text-gray-400 md:space-y-4 md:text-base">
@@ -72,7 +72,7 @@ const Footer = () => {
             </nav>
 
             <nav aria-label="Company">
-              <h3 className="mb-4 text-base font-bold md:mb-6 md:text-lg">
+              <h3 className="mb-4 text-base font-bold text-white md:mb-6 md:text-lg">
                 Company
               </h3>
               <ul className="space-y-3 text-sm text-gray-400 md:space-y-4 md:text-base">

@@ -5,10 +5,10 @@ import { propertyService } from "@/services/propertyService";
 import type { Property } from "@/types";
 import { ArrowRight } from "lucide-react";
 import PropertyCard from "@/components/property/PropertyCard";
-import PropertyCardSkeleton from "@/components/property/PropertyCardSkeleton";
-import PinnedHorizontalScroll, {
-  PINNED_STAGE_HEIGHT,
-} from "@/components/common/PinnedHorizontalScroll";
+import PropertyCardSkeleton, {
+  PinnedPropertySkeletonRow,
+} from "@/components/property/PropertyCardSkeleton";
+import PinnedHorizontalScroll from "@/components/common/PinnedHorizontalScroll";
 import PopularDestinations from "@/components/home/PopularDestinations";
 import LocalExperience from "@/components/home/LocalExperience";
 import AnimatedAmenities from "@/components/home/AnimatedAmenities";
@@ -149,17 +149,7 @@ const Home = () => {
                 ))}
               </div>
               {/* Mobile/Tablet Loading Skeleton */}
-              <div
-                className="lg:hidden -mx-4 flex gap-4 overflow-hidden px-4"
-                style={{ height: PINNED_STAGE_HEIGHT }}
-              >
-                {[1, 2].map((i) => (
-                  <PropertyCardSkeleton
-                    key={i}
-                    className="h-full sm:h-full w-[85vw] md:w-[60vw] shrink-0"
-                  />
-                ))}
-              </div>
+              <PinnedPropertySkeletonRow />
             </>
           ) : (
             <>
@@ -202,7 +192,7 @@ const Home = () => {
 
       <section className="py-20 bg-gradient-to-r from-accent via-accent-600 to-accent-700 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white">
             Own a beach house or shortlet property?
           </h2>
           <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">

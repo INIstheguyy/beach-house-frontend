@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
+import { usePinnedDetailsOpacity } from "@/components/common/pinnedScroll";
 import { formatPrice } from "@/utils/priceHelpers";
 import { cn } from "@/lib/utils";
 import type { Property } from "@/types";
@@ -13,6 +15,11 @@ interface PropertyCardProps {
 }
 
 const PropertyCard = ({ property, fill = false }: PropertyCardProps) => {
+  // Inside the pinned scroller: text is hidden while the card is narrow and
+  // fades in as it widens. Outside the scroller this is null (always visible).
+  const detailsOpacity = usePinnedDetailsOpacity();
+  const detailsStyle = detailsOpacity ? { opacity: detailsOpacity } : undefined;
+
   const imageUrl = property.featuredPhoto?.url || property.photos?.[0]?.url;
   const fullImageUrl = imageUrl
     ? imageUrl.startsWith("http")
@@ -37,12 +44,27 @@ const PropertyCard = ({ property, fill = false }: PropertyCardProps) => {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
           />
           {/* Gradient overlay for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500"></div>
+          <motion.div
+            style={detailsStyle}
+            className="absolute inset-0"
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500"></div>
+          </motion.div>
         </div>
 
         {/* Content (Bottom blurred section) */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <div className="backdrop-blur-md bg-white/10 p-3 sm:p-4 transform translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
+        <motion.div
+          style={detailsStyle}
+          className="absolute bottom-0 left-0 right-0"
+        >
+          {/* In the pinned scroller (fill) we use a plain dark panel: backdrop-blur
+              is expensive to repaint while the card changes size every frame */}
+          <div
+            className={cn(
+              "p-3 sm:p-4 transform translate-y-1 group-hover:translate-y-0 transition-transform duration-500",
+              fill ? "bg-black/45" : "backdrop-blur-md bg-white/10",
+            )}
+          >
             <div className="flex flex-col gap-1 mb-2">
               <h3 className="text-base sm:text-lg font-bold text-white line-clamp-1 drop-shadow-md">
                 {property.title}
@@ -78,7 +100,7 @@ const PropertyCard = ({ property, fill = false }: PropertyCardProps) => {
               </Button>
             </div>
           </div>
-        </div>
+        </motion.div>
       </Card>
     </Link>
   );
