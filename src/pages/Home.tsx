@@ -38,8 +38,9 @@ const Home = () => {
   return (
     <div>
       {/* Hero Section */}
-      <section className="pb-12">
-        <div className="relative group rounded-b-[2.5rem] overflow-hidden min-h-[55vh] md:min-h-[85vh] flex items-center justify-center">
+      <section className="pb-12 pt-4">
+        <div className="container mx-auto px-2">
+          <div className="relative group rounded-[2.5rem] overflow-hidden min-h-[55vh] md:min-h-[85vh] flex items-center justify-center">
           {/* Background Image */}
           <div
             className="absolute inset-0 transition-transform duration-700 ease-in-out group-hover:scale-105"
@@ -118,6 +119,7 @@ const Home = () => {
               </Card> */}
             </div>
           </div>
+        </div>
         </div>
       </section>
 
