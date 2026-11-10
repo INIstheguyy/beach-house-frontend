@@ -10,13 +10,13 @@ const socialLinks = [
 
 const serviceLinks = [
   { label: "Vacation Rentals", to: "/properties" },
-  { label: "Property Management", to: "/properties" },
-  { label: "Concierge Services", to: "/properties" },
+  { label: "Property Management", to: "/#contact" },
+  { label: "Concierge Services", to: "/#about" },
 ];
 
 const companyLinks = [
-  { label: "About Us", to: "/about" },
-  { label: "Contact", to: "/contact" },
+  { label: "About Us", to: "/#about" },
+  { label: "Contact", to: "/#contact" },
   { label: "Terms & Privacy", to: "/terms" },
 ];
 
