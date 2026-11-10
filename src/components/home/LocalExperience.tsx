@@ -1,6 +1,6 @@
 const LocalExperience = () => {
   return (
-    <section className="py-20 bg-white overflow-hidden">
+    <section id="about" className="py-20 bg-white overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
           {/* Text Content - Left Side / Top on Mobile */}
