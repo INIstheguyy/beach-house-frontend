@@ -5,7 +5,7 @@ import { propertyService } from "@/services/propertyService";
 import type { Property } from "@/types";
 import { ArrowRight } from "lucide-react";
 import PropertyCard from "@/components/property/PropertyCard";
-import PropertyCardSkeleton, {
+import {
   PinnedPropertySkeletonRow,
   HorizontalCarouselSkeleton,
 } from "@/components/property/PropertyCardSkeleton";

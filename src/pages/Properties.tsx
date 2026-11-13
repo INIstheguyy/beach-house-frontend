@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 
 import { propertyService } from "@/services/propertyService";
 import PropertyCard from "@/components/property/PropertyCard";
-import PropertyCardSkeleton, {
+import {
   PinnedPropertySkeletonRow,
   HorizontalCarouselSkeleton,
 } from "@/components/property/PropertyCardSkeleton";
