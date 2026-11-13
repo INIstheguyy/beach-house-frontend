@@ -14,8 +14,10 @@ import { propertyService } from "@/services/propertyService";
 import PropertyCard from "@/components/property/PropertyCard";
 import PropertyCardSkeleton, {
   PinnedPropertySkeletonRow,
+  HorizontalCarouselSkeleton,
 } from "@/components/property/PropertyCardSkeleton";
 import PinnedHorizontalScroll from "@/components/common/PinnedHorizontalScroll";
+import HorizontalCarousel from "@/components/common/HorizontalCarousel";
 import FilterHero from "@/components/property/FilterHero";
 import type { Property, PropertyFilters } from "@/types";
 
@@ -148,11 +150,7 @@ const Properties = () => {
         {loading ? (
           <>
             {/* Desktop Loading Skeleton */}
-            <div className="hidden lg:grid grid-cols-3 gap-6">
-                {[1, 2, 3].map((i) => (
-                  <PropertyCardSkeleton key={i} />
-                ))}
-              </div>
+            <HorizontalCarouselSkeleton />
             {/* Mobile/Tablet Loading Skeleton */}
             <PinnedPropertySkeletonRow />
           </>
@@ -171,11 +169,17 @@ const Properties = () => {
           </Card>
         ) : (
           <>
-            {/* Desktop Grid: 3 columns */}
-            <div className="hidden lg:grid grid-cols-3 gap-6">
-              {properties.map((property) => (
-                <PropertyCard key={property.documentId} property={property} />
-              ))}
+            {/* Desktop: horizontal drag carousel */}
+            <div className="hidden lg:block">
+              <HorizontalCarousel>
+                {properties.map((property) => (
+                  <PropertyCard
+                    key={property.documentId}
+                    property={property}
+                    fill
+                  />
+                ))}
+              </HorizontalCarousel>
             </div>
 
             {/* Mobile/Tablet: pinned scroll, vertical scroll moves the cards sideways */}

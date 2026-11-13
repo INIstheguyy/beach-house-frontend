@@ -1,6 +1,7 @@
 import {
   Children,
   isValidElement,
+  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -8,11 +9,13 @@ import {
   type ReactNode,
 } from "react";
 import {
+  animate,
   motion,
   useMotionValue,
   useReducedMotion,
   useScroll,
   useTransform,
+  type AnimationPlaybackControls,
   type MotionValue,
 } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -139,6 +142,10 @@ const PinnedScroller = ({ items }: { items: ReactNode[] }) => {
   const stageRef = useRef<HTMLDivElement>(null);
   const [travel, setTravel] = useState(0); // px the track slides sideways in total
 
+  // ── Drag state ────────────────────────────────────────────────────────────
+  const isDragging = useRef(false);
+  const springAnim = useRef<AnimationPlaybackControls | null>(null);
+
   const { scrollY } = useScroll();
 
   // Measurements, kept as motion values so transforms can read them
@@ -207,6 +214,12 @@ const PinnedScroller = ({ items }: { items: ReactNode[] }) => {
     };
 
     const tick = (now: number) => {
+      // Yield control to drag/spring while the user is dragging
+      if (isDragging.current) {
+        raf = 0;
+        return;
+      }
+
       // (never negative: a frame timestamp can be slightly older than performance.now())
       const dt = clamp((now - lastFrame) / 1000, 0, 0.05);
       lastFrame = now;
@@ -275,6 +288,85 @@ const PinnedScroller = ({ items }: { items: ReactNode[] }) => {
     };
   }, [scrollY, target, smooth, pinStart, travelMV]);
 
+  // ── Drag handler ─────────────────────────────────────────────────────────
+  // Pointer-capture approach: no overlay div needed; the stage itself is the
+  // drag surface. Horizontal drag → smooth updates directly. On release a
+  // spring snaps to the nearest card and the page scroll is re-synced so the
+  // next vertical scroll picks up from the right position.
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      // Only primary button / first touch
+      if (e.button !== 0 && e.pointerType === "mouse") return;
+      e.currentTarget.setPointerCapture(e.pointerId);
+
+      const startX = e.clientX;
+      const startSmooth = smooth.get();
+      let moved = false;
+
+      // Stop any in-flight spring before starting a new drag
+      if (springAnim.current) {
+        springAnim.current.stop();
+        springAnim.current = null;
+      }
+      isDragging.current = true;
+
+      const onMove = (moveEvt: PointerEvent) => {
+        const dx = moveEvt.clientX - startX;
+        if (Math.abs(dx) > 4) moved = true;
+        const dist = travelMV.get();
+        if (dist <= 0) return;
+
+        const raw = startSmooth - dx / dist;
+        // Elastic resistance: past the first/last card the mapping softens to 15%
+        let next: number;
+        if (raw < 0) next = raw * 0.15;
+        else if (raw > 1) next = 1 + (raw - 1) * 0.15;
+        else next = raw;
+
+        smooth.set(next);
+      };
+
+      const onUp = () => {
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", onUp);
+
+        // Suppress the click that follows a drag so <Link> children don't fire
+        if (moved) {
+          const suppress = (evt: Event) => {
+            evt.stopPropagation();
+            window.removeEventListener("click", suppress, true);
+          };
+          window.addEventListener("click", suppress, true);
+        }
+
+        // Clamp back to [0,1] and spring to nearest card
+        const clamped = clamp(smooth.get(), 0, 1);
+        const targetCard = Math.round(clamped * (count - 1));
+        const targetSmooth = count > 1 ? targetCard / (count - 1) : 0;
+
+        springAnim.current = animate(smooth, targetSmooth, {
+          type: "spring",
+          stiffness: 350,
+          damping: 35,
+          mass: 0.6,
+          onComplete: () => {
+            springAnim.current = null;
+            // Re-sync page scroll so the next vertical scroll is consistent
+            const targetScrollY =
+              pinStart.get() +
+              targetSmooth * travelMV.get() * SCROLL_PER_PX;
+            window.scrollTo({ top: targetScrollY });
+            isDragging.current = false;
+          },
+        });
+      };
+
+      window.addEventListener("pointermove", onMove);
+      window.addEventListener("pointerup", onUp);
+    },
+    [smooth, count, travelMV, pinStart],
+  );
+
   // Slide the row so the active card stays centred on screen.
   // (Centre of the active card moves (base + gap) per card: a straight line.)
   const x = useTransform(
@@ -293,8 +385,9 @@ const PinnedScroller = ({ items }: { items: ReactNode[] }) => {
     >
       <div
         ref={stageRef}
-        className="sticky top-24 flex flex-col gap-4 overflow-hidden"
-        style={{ height: PINNED_STAGE_HEIGHT }}
+        className="sticky top-24 flex flex-col gap-4 overflow-hidden relative select-none cursor-grab active:cursor-grabbing"
+        style={{ height: PINNED_STAGE_HEIGHT, touchAction: "pan-y" }}
+        onPointerDown={handlePointerDown}
       >
         <motion.div
           style={{ x, gap: PINNED_GAP }}
