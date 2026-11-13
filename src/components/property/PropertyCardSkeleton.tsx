@@ -5,6 +5,7 @@ import {
   PINNED_GAP,
   PINNED_STAGE_HEIGHT,
 } from "@/components/common/pinnedScroll";
+import { DESKTOP_STAGE_HEIGHT } from "@/components/common/HorizontalCarousel";
 
 interface PropertyCardSkeletonProps {
   className?: string;
@@ -36,6 +37,32 @@ const PropertyCardSkeleton = ({
 );
 
 export default PropertyCardSkeleton;
+
+/**
+ * Loading skeleton for the desktop horizontal drag carousel.
+ * Shows first card as active (2×) and subsequent cards as inactive.
+ */
+export const HorizontalCarouselSkeleton = () => {
+  const base = 38; // vw — matches DESKTOP_BASE_RATIO * 100
+  return (
+    <div
+      className="hidden lg:flex overflow-hidden"
+      style={{
+        height: DESKTOP_STAGE_HEIGHT,
+        gap: 20,
+        paddingLeft: `calc(50% - ${base * 2}vw / 2)`,
+      }}
+    >
+      {[2, 1, 1].map((size, i) => (
+        <PropertyCardSkeleton
+          key={i}
+          className="h-full shrink-0 sm:h-full"
+          style={{ width: `${base * size}vw` }}
+        />
+      ))}
+    </div>
+  );
+};
 
 /**
  * Loading row for the mobile/tablet pinned scroller: same height as the stage,

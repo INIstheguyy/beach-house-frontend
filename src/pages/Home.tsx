@@ -7,8 +7,10 @@ import { ArrowRight } from "lucide-react";
 import PropertyCard from "@/components/property/PropertyCard";
 import PropertyCardSkeleton, {
   PinnedPropertySkeletonRow,
+  HorizontalCarouselSkeleton,
 } from "@/components/property/PropertyCardSkeleton";
 import PinnedHorizontalScroll from "@/components/common/PinnedHorizontalScroll";
+import HorizontalCarousel from "@/components/common/HorizontalCarousel";
 import PopularDestinations from "@/components/home/PopularDestinations";
 import LocalExperience from "@/components/home/LocalExperience";
 import AnimatedAmenities from "@/components/home/AnimatedAmenities";
@@ -144,21 +146,23 @@ const Home = () => {
           {loading ? (
             <>
               {/* Desktop Loading Skeleton */}
-              <div className="hidden lg:grid grid-cols-3 gap-6">
-                {[1, 2, 3].map((i) => (
-                  <PropertyCardSkeleton key={i} />
-                ))}
-              </div>
+              <HorizontalCarouselSkeleton />
               {/* Mobile/Tablet Loading Skeleton */}
               <PinnedPropertySkeletonRow />
             </>
           ) : (
             <>
-              {/* Desktop Grid: 3 columns */}
-              <div className="hidden lg:grid grid-cols-3 gap-6">
-                {featuredProperties.map((property) => (
-                  <PropertyCard key={property.documentId} property={property} />
-                ))}
+              {/* Desktop: horizontal drag carousel */}
+              <div className="hidden lg:block">
+                <HorizontalCarousel>
+                  {featuredProperties.map((property) => (
+                    <PropertyCard
+                      key={property.documentId}
+                      property={property}
+                      fill
+                    />
+                  ))}
+                </HorizontalCarousel>
               </div>
 
               {/* Mobile/Tablet: pinned scroll, vertical scroll moves the cards sideways */}

@@ -11,15 +11,16 @@ import type { MotionValue } from "framer-motion";
 export const PINNED_STAGE_HEIGHT = "min(calc(100svh - 7.5rem), 42rem)";
 
 // Width of an INACTIVE card as a fraction of the screen width.
-// The ACTIVE card is always double that (0.42 -> 0.84 of the screen).
-export const PINNED_BASE_RATIO = 0.42;
+// The ACTIVE card is always double that (0.50 -> 1.00 of the screen — full-bleed).
+export const PINNED_BASE_RATIO = 0.50;
 
 // Space between cards in px (matches Tailwind's gap-4).
 export const PINNED_GAP = 16;
 
 // How much vertical scroll is needed per px of sideways movement.
 // 1 = cards move exactly with your finger, 1.5 = slower, 2 = even slower.
-export const SCROLL_PER_PX = 1.5;
+// Lowered from 1.5 → 1.2 to compensate for the longer travel caused by wider base cards.
+export const SCROLL_PER_PX = 1.2;
 
 // How quickly the cards catch up with your scroll position, in "per second".
 // Higher = tighter. 7 means "close ~99% of the gap in about 0.6s".
